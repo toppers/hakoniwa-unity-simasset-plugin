@@ -1,0 +1,5 @@
+{
+    "hakoniwa_base": "../../hakoniwa-base/",
+    "settings": "./",
+    "pdu_path": "../../hakoniwa-ros2sim/ros2/ros_json/"
+}
