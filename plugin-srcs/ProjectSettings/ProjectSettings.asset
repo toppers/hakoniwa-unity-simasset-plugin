@@ -617,7 +617,7 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Standalone: NO_USE_GRPC
+    Standalone: 
   additionalCompilerArguments:
     Standalone: []
   platformArchitecture: {}
