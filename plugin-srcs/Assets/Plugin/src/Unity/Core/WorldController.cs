@@ -92,9 +92,9 @@ namespace Hakoniwa.Core
                 AssetConfigLoader.AddInsideAsset(ctrl);
                 iasset.RegisterInsideAsset(child.name);
             }
-
             isim.SetInsideWorldSimulator(new UnitySimulator());
             Physics.autoSimulation = false;
+
         }
         public void Login(LoginRobotInfoType robo)
         {
