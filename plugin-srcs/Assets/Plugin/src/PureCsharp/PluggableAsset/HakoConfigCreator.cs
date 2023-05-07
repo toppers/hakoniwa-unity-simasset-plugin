@@ -242,8 +242,9 @@ namespace Hakoniwa.PluggableAsset
                     tmp.method_name = GetRpcMethodName(robo, entry, false);
                     tmp.method_type = entry.method_type;
                     tmp.channel_id = entry.channel_id;
-                    tmp.is_read = true;
+                    tmp.is_read = false;
                     tmp.pdu_size = entry.pdu_size;
+                    tmp.write_cycle = entry.write_cycle;
                     method_container[i] = tmp;
                 }
             }
@@ -281,7 +282,7 @@ namespace Hakoniwa.PluggableAsset
                     tmp.asset_name = robo.name;
                     tmp.method_name = GetShmMethodName(robo, entry, false);
                     tmp.channel_id = entry.channel_id;
-                    tmp.is_read = true;
+                    tmp.is_read = false;
                     tmp.iosize = entry.pdu_size;
                     method_container[i] = tmp;
                 }
@@ -292,7 +293,7 @@ namespace Hakoniwa.PluggableAsset
             };
             string json = JsonConvert.SerializeObject(method_container, settings);
             System.IO.File.WriteAllText("./shm_methods.json", json);
-            core_config.rpc_methods_path = "./shm_methods.json";
+            core_config.shm_methods_path = "./shm_methods.json";
 
         }
 
@@ -312,7 +313,7 @@ namespace Hakoniwa.PluggableAsset
             container[container.Length - 1] = tmp;
         }
 
-        public static void CreateConnector(HakoRobotConfigContainer robo_config, CoreConfig core_config)
+        public static void CreateConnector(HakoRobotConfigContainer robo_config, CoreConfig core_config, bool isDebug)
         {
             PduChannelConnectorConfig[] pdu_channe_container = new PduChannelConnectorConfig[0];
             ReaderConnectorConfig[] reader_container = new ReaderConnectorConfig[0];
@@ -329,15 +330,18 @@ namespace Hakoniwa.PluggableAsset
                     var tmp = new ReaderConnectorConfig();
                     tmp.name = "custom_reader_connector_" + i;
                     tmp.pdu_name = GetPduReaderName(entry);
-                    //reader_inputsには、rpcとshm両方あるので、どちらのエントリかをチェックする必要がある
-                    bool is_exist = Array.Exists<HakoRoboPduConfig>(robo.rpc_pdu_readers, e => e == entry);
-                    if (is_exist)
+                    if (isDebug == false)
                     {
-                        tmp.method_name = GetRpcMethodName(robo, entry, true);
-                    }
-                    else
-                    {
-                        tmp.method_name = GetShmMethodName(robo, entry, true);
+                        //reader_inputsには、rpcとshm両方あるので、どちらのエントリかをチェックする必要がある
+                        bool is_exist = Array.Exists<HakoRoboPduConfig>(robo.rpc_pdu_readers, e => e == entry);
+                        if (is_exist)
+                        {
+                            tmp.method_name = GetRpcMethodName(robo, entry, true);
+                        }
+                        else
+                        {
+                            tmp.method_name = GetShmMethodName(robo, entry, true);
+                        }
                     }
                     reader_container[i] = tmp;
                     //PDU CHANNEL CONNECTOR
@@ -350,15 +354,18 @@ namespace Hakoniwa.PluggableAsset
                     var tmp = new WriterConnectorConfig();
                     tmp.name = "custom_writer_connector_" + j;
                     tmp.pdu_name = GetPduWriterName(entry);
-                    //writer_inputsには、rpcとshm両方あるので、どちらのエントリかをチェックする必要がある
-                    bool is_exist = Array.Exists<HakoRoboPduConfig>(robo.rpc_pdu_writers, e => e == entry);
-                    if (is_exist)
+                    if (isDebug == false)
                     {
-                        tmp.method_name = GetRpcMethodName(robo, entry, false);
-                    }
-                    else
-                    {
-                        tmp.method_name = GetShmMethodName(robo, entry, false);
+                        //writer_inputsには、rpcとshm両方あるので、どちらのエントリかをチェックする必要がある
+                        bool is_exist = Array.Exists<HakoRoboPduConfig>(robo.rpc_pdu_writers, e => e == entry);
+                        if (is_exist)
+                        {
+                            tmp.method_name = GetRpcMethodName(robo, entry, false);
+                        }
+                        else
+                        {
+                            tmp.method_name = GetShmMethodName(robo, entry, false);
+                        }
                     }
                     writer_container[j] = tmp;
                     //PDU CHANNEL CONNECTOR

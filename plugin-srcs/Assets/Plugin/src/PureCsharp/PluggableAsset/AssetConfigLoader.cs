@@ -101,6 +101,7 @@ namespace Hakoniwa.PluggableAsset
         {
             if (io_readers == null)
             {
+                SimpleLogger.Get().Log(Level.ERROR, "GetIoReader(): Can not found io_readers");
                 return null;
             }
             foreach (var e in io_readers)
@@ -110,6 +111,7 @@ namespace Hakoniwa.PluggableAsset
                     return e;
                 }
             }
+            SimpleLogger.Get().Log(Level.ERROR, "GetIoReader(): Can not found io_readers name=" + name);
             return null;
         }
         private static IIoWriter GetIoWriter(string name)
@@ -752,7 +754,8 @@ namespace Hakoniwa.PluggableAsset
                 if (core_config.cpp_mode.Equals("asset_rpc"))
                 {
 #if NO_USE_GRPC
-                    throw new NotSupportedException("ERROR: asset_rpc is not supported..");
+                    //throw new NotSupportedException("ERROR: asset_rpc is not supported..");
+                    SimpleLogger.Get().Log(Level.INFO, "DEBUG MODE");
 #else
                     SimpleLogger.Get().Log(Level.INFO, "START CLIENT");
                     RpcClient.StartClient(AssetConfigLoader.core_config.core_ipaddr, AssetConfigLoader.core_config.core_portno);

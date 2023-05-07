@@ -7,6 +7,7 @@ using Hakoniwa.PluggableAsset;
 using System;
 using Newtonsoft.Json.Linq;
 using Hakoniwa.PluggableAsset.Assets.Robot.Parts;
+using System.Text.RegularExpressions;
 
 [System.Serializable]
 class HakoniwaPathSettings
@@ -14,6 +15,7 @@ class HakoniwaPathSettings
     public string hakoniwa_base;
     public string settings;
     public string pdu_path;
+    public string offset_path;
 }
 
 public class HakoniwaEditor : EditorWindow
@@ -178,10 +180,63 @@ public class HakoniwaEditor : EditorWindow
             micon_settings_json_array.Add(new JObject(json_data));
         }
     }
-    static void GenerateConfigs(HakoRobotConfigContainer robo_config)
+    static string GetCmdResult(string command)
+    {
+        System.Diagnostics.Process process = new System.Diagnostics.Process();
+        process.StartInfo.FileName = "PowerShell.exe";
+        process.StartInfo.Arguments = "wsl -e \"" + command + "\"";
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+        process.Start();
+        return process.StandardOutput.ReadToEnd();
+    }
+
+    static void GenerateConfigs(HakoRobotConfigContainer robo_config, bool isRPC, bool isWindows)
     {
         var core_config = new CoreConfig();
         core_config.asset_timeout = 3;
+        if (isRPC)
+        {
+            if (isDebug == false)
+            {
+                core_config.cpp_mode = "asset_rpc";
+                core_config.cpp_asset_name = "UnityAsset";
+                core_config.core_portno = 50051;
+                core_config.pdu_udp_portno_asset = 54003;
+                core_config.pdu_bin_offset_package_dir = path.offset_path;
+                if (isWindows)
+                {
+                    string output = GetCmdResult("cat /etc/resolv.conf");
+                    char[] delimiters = new char[] { '\t', ' ', '\n' };
+                    string[] array = output.Split(delimiters);
+                    core_config.asset_ipaddr = array[array.Length - 2];
+
+                    //eth0
+                    output = GetCmdResult("/usr/sbin/ifconfig eth0");
+                    Regex regex = new Regex(@"inet\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})");
+                    Match match = regex.Match(output);
+                    if (match.Success)
+                    {
+                        core_config.core_ipaddr = match.Groups[1].Value;
+                    }
+                    else
+                    {
+                        core_config.core_ipaddr = output;
+                        //throw new ArgumentException("Can not found ipaddress from wsl2 eth0");
+                    }
+                }
+            }
+            else
+            {
+                core_config.cpp_mode = "asset_rpc_cpp";
+                //TODO
+            }
+        }
+        else // SHM
+        {
+            //TODO
+        }
 
         //inside_asset
         HakoConfigCreator.CreateInsideAsset(robo_config, core_config);
@@ -190,12 +245,15 @@ public class HakoniwaEditor : EditorWindow
         HakoConfigCreator.CreatePduReaderWriter(robo_config, core_config);
 
 
-        //rpc_method, shm_method
-        HakoConfigCreator.CreateRpcMethod(robo_config, core_config);
-        HakoConfigCreator.CreateShmMethod(robo_config, core_config);
-
+        if (isDebug == false)
+        {
+            //rpc_method, shm_method
+            HakoConfigCreator.CreateRpcMethod(robo_config, core_config);
+            HakoConfigCreator.CreateShmMethod(robo_config, core_config);
+        }
         //connector rw
-        HakoConfigCreator.CreateConnector(robo_config, core_config);
+        HakoConfigCreator.CreateConnector(robo_config, core_config, isDebug);
+
 
         //pdu_configs
         HakoConfigCreator.CreatePduConfig(ros_topic_container, core_config, path.pdu_path);
@@ -204,9 +262,20 @@ public class HakoniwaEditor : EditorWindow
         //core_config
         HakoConfigCreator.CreateCoreConfig(core_config);
     }
-
+    static bool isDebug = false;
     [MenuItem("Window/Hakoniwa/Generate")]
-    static void AssetsUpdate()
+    static void GenerateAssetConfig()
+    {
+        isDebug = false;
+        AssetsUpdateCommon();
+    }
+    [MenuItem("Window/Hakoniwa/GenerateDebug")]
+    static void GenerateDebugAssetConfig()
+    {
+        isDebug = true;
+        AssetsUpdateCommon();
+    }
+    static void AssetsUpdateCommon()
     {
         Init();
         LoadPath();
@@ -242,7 +311,7 @@ public class HakoniwaEditor : EditorWindow
         {
             File.Delete(path.settings + "/custom.json");
         }
-        GenerateConfigs(robo_config);
+        GenerateConfigs(robo_config, true, true);
     }
 
 

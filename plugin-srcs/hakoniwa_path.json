@@ -1,5 +1,6 @@
 {
-    "hakoniwa_base": "../../hakoniwa-base/",
+    "hakoniwa_base": "../../hakoniwa-base/workspace/dev/ai",
     "settings": "./",
-    "pdu_path": "../../hakoniwa-ros2sim/ros2/ros_json/"
+    "pdu_path": "../../hakoniwa-ros2sim/ros2/ros_json/",
+    "offset_path": "../../hakoniwa-ros2sim/ros2/unity/tb3/offset"
 }

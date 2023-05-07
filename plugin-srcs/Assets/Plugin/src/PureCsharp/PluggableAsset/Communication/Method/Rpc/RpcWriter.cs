@@ -52,6 +52,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Method.Rpc
         public async void Flush(IPduCommData data)
         {
             this.count++;
+            //SimpleLogger.Get().Log(Level.INFO, "write_count=" + this.rpc_config.write_count);
             if ((this.count % this.rpc_config.write_count) != 0)
             {
                 return;

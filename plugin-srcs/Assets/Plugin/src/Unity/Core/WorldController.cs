@@ -80,20 +80,19 @@ namespace Hakoniwa.Core
             iasset = isim.GetAssetManager();
             isim.RegisterEnvironmentOperation(new UnityEnvironmentOperation());
 
-            try
-            {
-                var login_robots = AssetConfigLoader.LoadJsonFile<LoginRobot>("../../../settings/tb3/PhotonLoginRobot.json");
-                Debug.Log("Photon Mode");
-
-            } catch (Exception)
-            {
-                var login_robots = AssetConfigLoader.LoadJsonFile<LoginRobot>("../../../settings/tb3/LoginRobot.json");
-                foreach (var e in login_robots.robos)
-                {
-                    this.Login(e);
-                }
-            }
             isim.SaveEnvironment();
+
+            Debug.Log("childcount=" + this.transform.childCount);
+            for (int i = 0; i < this.transform.childCount; i++)
+            {
+                Transform child = this.transform.GetChild(i);
+                Debug.Log(child.name);
+                var ctrl = child.GetComponentInChildren<IInsideAssetController>();
+                ctrl.Initialize();
+                AssetConfigLoader.AddInsideAsset(ctrl);
+                iasset.RegisterInsideAsset(child.name);
+            }
+
             isim.SetInsideWorldSimulator(new UnitySimulator());
             Physics.autoSimulation = false;
         }
