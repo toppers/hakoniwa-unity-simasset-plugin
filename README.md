@@ -143,9 +143,9 @@ WAIT START:
 
 ## TODO
 
-* Unityアセットパッケージ対応
-* SHM対応
-* Ubuntu対応
-* Mac対応
-* TB3モデル対応
-* EV3モデル対応
+- [ ] Unityアセットパッケージ対応
+- [ ] SHM対応
+- [ ] Ubuntu対応
+- [ ] Mac対応
+- [ ] TB3モデル対応
+- [ ] EV3モデル対応
