@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 #if NO_USE_GRPC
 #else
+using Hakoniwa.PluggableAsset.Communication.Method.Rpc;
 using Hakoniwa.PluggableAsset.Communication.Method.Mqtt;
 using Hakoniwa.Core.Rpc;
 #endif
