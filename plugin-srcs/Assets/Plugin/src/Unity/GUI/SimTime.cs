@@ -15,8 +15,8 @@ namespace Hakoniwa.GUI
         // Start is called before the first frame update
         void Start()
         {
-            this.root = GameObject.Find("Hakoniwa").GetComponent<WorldController>();
-            this.myObject = GameObject.Find("GUI/Canvas/SimTime/Value");
+            this.root = GameObject.Find("Robot").GetComponent<WorldController>();
+            this.myObject = GameObject.Find("GUI/Simulation/SimTime/Value");
             simTimeText = myObject.GetComponent<Text>();
         }
 

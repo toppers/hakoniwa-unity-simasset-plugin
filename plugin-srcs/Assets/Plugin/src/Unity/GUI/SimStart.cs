@@ -76,7 +76,7 @@ namespace Hakoniwa.GUI
                 case SimCommandStatus.WaitStart:
                     if (state == SimulationState.Running)
                     {
-                        my_text.text = "停止";
+                        my_text.text = "STOP";
                         cmd_status = SimCommandStatus.WaitStop;
                     }
                     isResetHappened = false;
@@ -84,14 +84,14 @@ namespace Hakoniwa.GUI
                 case SimCommandStatus.WaitStop:
                     if (state == SimulationState.Stopped)
                     {
-                        my_text.text = "リセット";
+                        my_text.text = "RESET";
                         cmd_status = SimCommandStatus.WaitReset;
                     }
                     break;
                 case SimCommandStatus.WaitReset:
                     if (isResetHappened)
                     {
-                        my_text.text = "開始";
+                        my_text.text = "START";
                         cmd_status = SimCommandStatus.WaitStart;
                     }
                     break;
