@@ -12,6 +12,7 @@
 * OS
   * Windows/WSL2
     * net-tools がインストールされていること
+    * unzip がインストールされていること
 * Unity Hub
   * Unity Hub 3.4.1以降
 * Unity
@@ -72,8 +73,14 @@ cd hakoniwa-unity-simasset-plugin
 bash install.bash
 ```
 
-Unity Hub から、`hakoniwa-unity-simasset-plugin/plugin-srcs` を開き、
-`Hakoniwa` シーンをダブルクリックしてください。
+Unity Hub から、`hakoniwa-unity-simasset-plugin/plugin-srcs` を開き、Unityを起動してください。
+
+なお、Unity起動時に`Newtonsoft.Json`がないというエラーが出る場合があります。
+この場合は、以下の記事を参考にして、Unityのパッケージマネージャから`Newtonsoft.Json`をインストールしてください。
+
+https://qiita.com/sakano/items/6fa16af5ceab2617fc0f
+
+Unity起動したら、`Hakoniwa` シーンをダブルクリックしてください。
 
 ![image](https://user-images.githubusercontent.com/164193/236663723-e50cfc04-a6fb-4794-86c2-95adf65f7161.png)
 
