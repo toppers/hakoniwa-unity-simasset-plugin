@@ -72,7 +72,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts.TestDriver
         }
 
         public int update_cycle = 100;
-        private string topic_name = "camera_image_jpg";
+        public string topic_name = "camera_image_jpg";
         public string roboname = "SampleRobot";
 
         public RosTopicMessageConfig[] getRosConfig()
