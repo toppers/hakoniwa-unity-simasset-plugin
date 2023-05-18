@@ -109,13 +109,12 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
         {
             return this.pdu_type_name;
         }
-        //private static string package_name = null;
-        private static Stack<string> stack = new Stack<string>();
+        private static Stack<string> packageNameStack = new Stack<string>();
         private void SetPdu(string arg_pdu_type_name)
         {
-            if (stack.Count > 0)
+            if (packageNameStack.Count > 0)
             {
-                SimpleLogger.Get().Log(Level.DEBUG, "SetPdu(): BEFORE: package_name = " + stack.Peek());
+                SimpleLogger.Get().Log(Level.DEBUG, "SetPdu(): BEFORE: package_name = " + packageNameStack.Peek());
             }
             else
             {
@@ -124,15 +123,15 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
             if (arg_pdu_type_name.Contains('/'))
             {
                 string package_name = arg_pdu_type_name.Split('/')[0];
-                stack.Push(package_name);
+                packageNameStack.Push(package_name);
             }
             else
             {
-                string package_name = stack.Peek();
-                stack.Push(package_name);
+                string package_name = packageNameStack.Peek();
+                packageNameStack.Push(package_name);
             }
             SimpleLogger.Get().Log(Level.DEBUG, "SetPdu(): arg_pdu_type_name = " + arg_pdu_type_name);
-            SimpleLogger.Get().Log(Level.DEBUG, "SetPdu(): AFTER: package_name = " + stack.Peek());
+            SimpleLogger.Get().Log(Level.DEBUG, "SetPdu(): AFTER: package_name = " + packageNameStack.Peek());
             if (this.pdu_config == null)
             {
                 string tmp_type = arg_pdu_type_name;
@@ -142,7 +141,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
                 }
                 else
                 {
-                    tmp_type = stack.Peek() + "/" + arg_pdu_type_name;
+                    tmp_type = packageNameStack.Peek() + "/" + arg_pdu_type_name;
                 }
                 var e = AssetConfigLoader.GetPduConfig(tmp_type);
                 if (e == null)
@@ -191,7 +190,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
 
                 }
             }
-            stack.Pop();
+            packageNameStack.Pop();
             return;
         }
 
