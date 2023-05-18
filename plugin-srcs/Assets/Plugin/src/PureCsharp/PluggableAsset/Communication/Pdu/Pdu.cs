@@ -109,16 +109,30 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
         {
             return this.pdu_type_name;
         }
-        private static string package_name = null;
+        //private static string package_name = null;
+        private static Stack<string> stack = new Stack<string>();
         private void SetPdu(string arg_pdu_type_name)
         {
-            SimpleLogger.Get().Log(Level.DEBUG, "SetPdu(): BEFORE: package_name = " + package_name);
+            if (stack.Count > 0)
+            {
+                SimpleLogger.Get().Log(Level.DEBUG, "SetPdu(): BEFORE: package_name = " + stack.Peek());
+            }
+            else
+            {
+                SimpleLogger.Get().Log(Level.DEBUG, "SetPdu(): BEFORE: package_name = not stacked: " + arg_pdu_type_name);
+            }
             if (arg_pdu_type_name.Contains('/'))
             {
-                package_name = arg_pdu_type_name.Split('/')[0];
+                string package_name = arg_pdu_type_name.Split('/')[0];
+                stack.Push(package_name);
+            }
+            else
+            {
+                string package_name = stack.Peek();
+                stack.Push(package_name);
             }
             SimpleLogger.Get().Log(Level.DEBUG, "SetPdu(): arg_pdu_type_name = " + arg_pdu_type_name);
-            SimpleLogger.Get().Log(Level.DEBUG, "SetPdu(): AFTER: package_name = " + package_name);
+            SimpleLogger.Get().Log(Level.DEBUG, "SetPdu(): AFTER: package_name = " + stack.Peek());
             if (this.pdu_config == null)
             {
                 string tmp_type = arg_pdu_type_name;
@@ -128,7 +142,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
                 }
                 else
                 {
-                    tmp_type = package_name + "/" + arg_pdu_type_name;
+                    tmp_type = stack.Peek() + "/" + arg_pdu_type_name;
                 }
                 var e = AssetConfigLoader.GetPduConfig(tmp_type);
                 if (e == null)
@@ -177,6 +191,8 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
 
                 }
             }
+            stack.Pop();
+            return;
         }
 
         public Pdu(string arg_pdu_type_name)

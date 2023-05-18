@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Hakoniwa.PluggableAsset;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace Hakoniwa.PluggableAsset
 {
@@ -102,6 +103,14 @@ namespace Hakoniwa.PluggableAsset
         }
         private static HakoRoboPduConfig[] GetPduReaders(HakoRobotConfig robo)
         {
+            if (robo.rpc_pdu_readers == null)
+            {
+                robo.rpc_pdu_readers = new HakoRoboPduConfig[0];
+            }
+            if (robo.shm_pdu_readers == null)
+            {
+                robo.shm_pdu_readers = new HakoRoboPduConfig[0];
+            }
             var reader_inputs = new HakoRoboPduConfig[robo.rpc_pdu_readers.Length + robo.shm_pdu_readers.Length];
             Array.Copy(robo.rpc_pdu_readers, reader_inputs, robo.rpc_pdu_readers.Length);
             Array.Copy(robo.shm_pdu_readers, 0, reader_inputs, robo.rpc_pdu_readers.Length, robo.shm_pdu_readers.Length);
@@ -109,6 +118,14 @@ namespace Hakoniwa.PluggableAsset
         }
         private static HakoRoboPduConfig[] GetPduWriters(HakoRobotConfig robo)
         {
+            if (robo.rpc_pdu_writers == null)
+            {
+                robo.rpc_pdu_writers = new HakoRoboPduConfig[0];
+            }
+            if (robo.shm_pdu_writers == null)
+            {
+                robo.shm_pdu_writers = new HakoRoboPduConfig[0];
+            }
             var writer_inputs = new HakoRoboPduConfig[robo.rpc_pdu_writers.Length + robo.shm_pdu_writers.Length];
             Array.Copy(robo.rpc_pdu_writers, writer_inputs, robo.rpc_pdu_writers.Length);
             Array.Copy(robo.shm_pdu_writers, 0, writer_inputs, robo.rpc_pdu_writers.Length, robo.shm_pdu_writers.Length);
