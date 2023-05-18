@@ -103,19 +103,17 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.TB3
             }
         }
 
+
         private float GetSensorValue(int degree)
         {
-            //Vector3 fwd = sensor.transform.TransformDirection(Vector3.forward);
-            Vector3 fwd = sensor.transform.forward;
+            Vector3 fwd = this.sensor.transform.forward;
             RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(this.sensor.transform.position);
-            if (Physics.Raycast(transform.position, fwd, out hit, contact_distance))
+            if (Physics.Raycast(sensor.transform.position, fwd, out hit, contact_distance))
             {
                 if (is_debug && (degree % view_interval) == 0)
                 {
                     Debug.DrawRay(this.sensor.transform.position, fwd * hit.distance, Color.red, 0.05f, false);
                 }
-                //Debug.Log(hit.collider.gameObject.name);
                 return hit.distance;
             }
             else
@@ -127,6 +125,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.TB3
                 return contact_distance;
             }
         }
+
 
         public string topic_type = "sensor_msgs/LaserScan";
         public string topic_name = "scan";
