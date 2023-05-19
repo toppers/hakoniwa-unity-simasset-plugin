@@ -79,7 +79,13 @@ public class HakoniwaEditor : EditorWindow
     }
     static private void GetHakoAssets(int root_num)
     {
-        hako_assets = GameObject.FindGameObjectsWithTag("HakoAsset");
+        try {
+            hako_assets = GameObject.FindGameObjectsWithTag("HakoAsset");
+        }
+        catch (Exception e) {
+            Debug.Log("ERROR: Not found TAG: HakoAsset");
+            hako_assets = new  GameObject[0];
+        }
         int len = 0;
         foreach(var e in hako_assets)
         {
