@@ -66,5 +66,6 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         public static readonly int CameraInfo_pdu_size = 580;
         public static readonly int LaserScan_pdu_size = 3044;
         public static readonly int Bool_pdu_size = 4;
+        public static readonly int IMU_pdu_size = 432;
     }
 }
