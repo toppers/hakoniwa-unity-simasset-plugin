@@ -110,7 +110,8 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     dst.SetData(elm.field_name, BitConverter.ToBoolean(src_buffer, off));
                     break;
                 case "string":
-                    var bytes = new byte[elm.elm_size];
+                    int nullIndex = Array.IndexOf(src_buffer, (byte)0);
+                    var bytes = new byte[nullIndex];
                     Buffer.BlockCopy(src_buffer, off, bytes, 0, bytes.Length);
                     dst.SetData(elm.field_name,
                         System.Text.Encoding.ASCII.GetString(bytes));
