@@ -9,6 +9,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
     {
         private PduDataFieldsConfig pdu_config;
         private string pdu_type_name = null;
+        private string my_package_name = null;
         private Dictionary<string, SByte> field_int8 = new Dictionary<string, SByte>();
         private Dictionary<string, Byte> field_uint8 = new Dictionary<string, Byte>();
         private Dictionary<string, Int16> field_int16 = new Dictionary<string, Int16>();
@@ -109,8 +110,12 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
         {
             return this.pdu_type_name;
         }
+        public string GetPackageName()
+        {
+            return this.my_package_name;
+        }
         private static Stack<string> packageNameStack = new Stack<string>();
-        private void SetPdu(string arg_pdu_type_name)
+        private void SetPdu(string arg_pdu_type_name, string parent_package_name = null)
         {
             if (packageNameStack.Count > 0)
             {
@@ -125,13 +130,21 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
                 string package_name = arg_pdu_type_name.Split('/')[0];
                 packageNameStack.Push(package_name);
             }
-            else
+            else if (packageNameStack.Count > 0)
             {
                 string package_name = packageNameStack.Peek();
                 packageNameStack.Push(package_name);
             }
             SimpleLogger.Get().Log(Level.DEBUG, "SetPdu(): arg_pdu_type_name = " + arg_pdu_type_name);
-            SimpleLogger.Get().Log(Level.DEBUG, "SetPdu(): AFTER: package_name = " + packageNameStack.Peek());
+            if (packageNameStack.Count > 0)
+            {
+                this.my_package_name = packageNameStack.Peek();
+                SimpleLogger.Get().Log(Level.DEBUG, "SetPdu(): AFTER: package_name = " + this.my_package_name);
+            }
+            if (this.my_package_name == null)
+            {
+                throw new ArgumentException("Can not found package_name:" + arg_pdu_type_name);
+            }
             if (this.pdu_config == null)
             {
                 string tmp_type = arg_pdu_type_name;
@@ -139,7 +152,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
                 {
                     //nothing to do
                 }
-                else
+                else if (packageNameStack.Count > 0)
                 {
                     tmp_type = packageNameStack.Peek() + "/" + arg_pdu_type_name;
                 }
@@ -194,14 +207,19 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
             return;
         }
 
-        public Pdu(string arg_pdu_type_name)
+        public Pdu(string arg_pdu_type_name,string parent_package_name = null)
         {
             this.pdu_type_name = arg_pdu_type_name;
-            this.SetPdu(arg_pdu_type_name);
+            this.SetPdu(arg_pdu_type_name, parent_package_name);
         }
 
         public void Reset()
         {
+            if (this.my_package_name == null)
+            {
+                throw new ArgumentException("Can not found package_name for " + this.pdu_type_name);
+            }
+            packageNameStack.Push(this.my_package_name);
             foreach (var e in pdu_config.fields)
             {
                 if (IsArray(e.type))
@@ -503,6 +521,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
             {
                 throw new ArgumentException("Invalid PDU access : field_name=" + field_name + " value=" + value);
             }
+            //Debug.Log("SetData: " + this.GetHashCode() + "field_name " + field_name + " value=" + value);
             //SimpleLogger.Get().Log(Level.DEBUG, "uint32 name= " + field_name + " data=" + value);
             this.field_uint32[field_name] = value;
         }
@@ -783,6 +802,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
             {
                 throw new ArgumentException("Invalid PDU access : field_name=" + field_name);
             }
+            //Debug.Log("SetData PDU: field_name=" + field_name);
             this.field_struct[field_name] = pdu;
         }
 
@@ -792,6 +812,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
             {
                 throw new ArgumentException("Invalid PDU access : field_name=" + field_name);
             }
+            //Debug.Log("SetData PDU[]: field_name=" + field_name);
             this.field_struct_array[field_name] = pdu;
         }
         public void SetData(string field_name, int off, Pdu pdu)
@@ -855,6 +876,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
             {
                 throw new ArgumentException("Invalid PDU access : field_name=" + field_name);
             }
+            //Debug.Log("GetDataUInt32: " + this.GetHashCode() + ": " + field_name + " :" + field_uint32[field_name]);
             return field_uint32[field_name];
         }
 
