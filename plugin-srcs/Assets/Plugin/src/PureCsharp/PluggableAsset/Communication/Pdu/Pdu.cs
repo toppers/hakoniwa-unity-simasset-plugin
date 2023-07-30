@@ -457,8 +457,10 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
                     this.field_float64_array.Add(name, new double[array_size]);
                     break;
                 case "string":
-                    this.field_string_array.Remove(name);
-                    this.field_string_array.Add(name, new string[array_size]);
+		    if (this.field_string_array.Count == 0) {
+                    	this.field_string_array.Remove(name);
+                    	this.field_string_array.Add(name, new string[array_size]);
+		    }
                     break;
                 case "bool":
                     this.field_bool_array.Remove(name);
