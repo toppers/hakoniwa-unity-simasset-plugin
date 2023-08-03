@@ -1,17 +1,46 @@
 #!/bin/bash
 
+source detect_os_type.bash
+
+
+
 CURR_DIR=`pwd`
 PARENT_DIR=plugin-srcs/Assets/Plugin
-if [ -d  ${PARENT_DIR}/Libs ]
+if [ ${OS_TYPE} = "wsl2" ]
 then
-	:
+	if [ -d  ${PARENT_DIR}/Libs ]
+	then
+		:
+	else
+		wget https://github.com/toppers/hakoniwa-unity-simasset-plugin/releases/download/v0.0.1/Libs.zip
+		mv Libs.zip ${PARENT_DIR}/
+		cd ${PARENT_DIR}/
+		unzip Libs.zip
+		rm -f Libs.zip
+		cd ${CURR_DIR}
+	fi
 else
-	wget https://github.com/toppers/hakoniwa-unity-simasset-plugin/releases/download/v0.0.1/Libs.zip
-	mv Libs.zip ${PARENT_DIR}/
-	cd ${PARENT_DIR}/
-	unzip Libs.zip
-	rm -f Libs.zip
-	cd ${CURR_DIR}
+	if [ ${OS_TYPE} = "Mac" ]
+	then
+		LIB_EXT=dylib
+		which wget
+		if [ $? -ne 0 ]
+		then
+			brew install wget
+		fi
+	else
+		LIB_EXT=so
+	fi
+	if [ -d  ${PARENT_DIR}/Libs ]
+	then
+		:
+	else
+		mkdir ${PARENT_DIR}/Libs
+		wget https://github.com/toppers/hakoniwa-core-cpp-client/releases/download/v1.0.3/libshakoc.${ARCH_TYPE}.${LIB_EXT}
+		mv libshakoc.${ARCH_TYPE}.${LIB_EXT} ${PARENT_DIR}/Libs/libshakoc.${LIB_EXT}
+		# REMOVE gRPC codes
+		rm -rf plugin-srcs/Assets/Plugin/src/PureCsharp/Gen*
+	fi
 fi
 
 

@@ -38,6 +38,8 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 foreach (var config in configs)
                 {
                     config.value.name = name + "_" + config.value.org_name;
+#if NO_USE_GRPC
+#else
                     if (config.io_method == IoMethod.RPC)
                     {
                         if (config.io_dir == IoDir.READ)
@@ -50,6 +52,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                         }
                     }
                     else
+#endif
                     {
                         if (config.io_dir == IoDir.READ)
                         {
@@ -68,6 +71,16 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             container.rpc_pdu_writers = this.ConvListToArray(rpc_writers);
             container.shm_pdu_readers = this.ConvListToArray(shm_readers);
             container.shm_pdu_writers = this.ConvListToArray(shm_writers);
+#if NO_USE_GRPC
+            foreach (var entry in container.shm_pdu_readers)
+            {
+                entry.method_type = "SHM";
+            }
+            foreach (var entry in container.shm_pdu_writers)
+            {
+                entry.method_type = "SHM";
+            }
+#endif
             return JsonConvert.SerializeObject(container, Formatting.Indented); ;
         }
         private RobotPartsConfig[] ConvListToArray(List<RobotPartsConfig> list)

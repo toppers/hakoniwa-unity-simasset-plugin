@@ -241,7 +241,9 @@ public class HakoniwaEditor : EditorWindow
         }
         else // SHM
         {
-            //TODO
+            core_config.cpp_mode = "asset_rpc_cpp";
+            core_config.cpp_asset_name = "UnityAsset";
+            core_config.pdu_bin_offset_package_dir = path.offset_path;
         }
 
         //inside_asset
@@ -317,7 +319,11 @@ public class HakoniwaEditor : EditorWindow
         {
             File.Delete(path.settings + "/custom.json");
         }
+#if NO_USE_GRPC
+        GenerateConfigs(robo_config, false, false);
+#else
         GenerateConfigs(robo_config, true, true);
+#endif
     }
 
 
