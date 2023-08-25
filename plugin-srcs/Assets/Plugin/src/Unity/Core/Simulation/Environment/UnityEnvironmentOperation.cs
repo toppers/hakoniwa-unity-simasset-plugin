@@ -100,7 +100,14 @@ namespace Hakoniwa.Core.Simulation.Environment
             }
             foreach (var articbody in articbodies)
             {
-                articbody.immovable = this.initial_kinematics[i];
+                // error is occured.. so deleted this cod.
+                // >>>
+                // articbody.immovable = this.initial_kinematics[i];
+                // <<< 
+
+                //error info:
+                // Only the root body of the articulation can be made immovable
+                // UnityEngine.StackTraceUtility:ExtractStackTrace()
                 i++;
             }
             foreach (Transform child in this.root.transform)
