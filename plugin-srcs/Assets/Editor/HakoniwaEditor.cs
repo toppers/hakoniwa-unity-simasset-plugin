@@ -31,7 +31,7 @@ public class HakoniwaEditor : EditorWindow
 
     static void LoadPath()
     {
-        string jsonString = File.ReadAllText("./hakoniwa_path.json");
+        string jsonString = File.ReadAllText("./Assets/Resources/hakoniwa_path.json");
         path = JsonConvert.DeserializeObject<HakoniwaPathSettings>(jsonString);
         Debug.Log("hakoniwa_base path=" + path.hakoniwa_base);
         Debug.Log("settings path=" + path.settings);

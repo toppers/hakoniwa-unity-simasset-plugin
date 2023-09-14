@@ -1,0 +1,29 @@
+[
+  {
+    "name": "SampleRobot_touch_sensorPdu",
+    "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
+    "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
+    "path": null,
+    "conv_path": null,
+    "pdu_config_name": "std_msgs/Bool",
+    "topic_message_name": null
+  },
+  {
+    "name": "SampleRobot_camera_image_jpgPdu",
+    "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
+    "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
+    "path": null,
+    "conv_path": null,
+    "pdu_config_name": "sensor_msgs/CompressedImage",
+    "topic_message_name": null
+  },
+  {
+    "name": "SampleRobot_scanPdu",
+    "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
+    "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
+    "path": null,
+    "conv_path": null,
+    "pdu_config_name": "sensor_msgs/LaserScan",
+    "topic_message_name": null
+  }
+]

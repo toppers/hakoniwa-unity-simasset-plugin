@@ -1,0 +1,52 @@
+[
+  {
+    "pdu_type_name": "std_msgs/Bool",
+    "fields": null,
+    "pdu_data_field_path": "./ros_types/json/std_msgs/Bool.json"
+  },
+  {
+    "pdu_type_name": "Bool",
+    "fields": null,
+    "pdu_data_field_path": "./ros_types/json/std_msgs/Bool.json"
+  },
+  {
+    "pdu_type_name": "sensor_msgs/CompressedImage",
+    "fields": null,
+    "pdu_data_field_path": "./ros_types/json/sensor_msgs/CompressedImage.json"
+  },
+  {
+    "pdu_type_name": "CompressedImage",
+    "fields": null,
+    "pdu_data_field_path": "./ros_types/json/sensor_msgs/CompressedImage.json"
+  },
+  {
+    "pdu_type_name": "sensor_msgs/LaserScan",
+    "fields": null,
+    "pdu_data_field_path": "./ros_types/json/sensor_msgs/LaserScan.json"
+  },
+  {
+    "pdu_type_name": "LaserScan",
+    "fields": null,
+    "pdu_data_field_path": "./ros_types/json/sensor_msgs/LaserScan.json"
+  },
+  {
+    "pdu_type_name": "geometry_msgs/Twist",
+    "fields": null,
+    "pdu_data_field_path": "./ros_types/json/geometry_msgs/Twist.json"
+  },
+  {
+    "pdu_type_name": "Twist",
+    "fields": null,
+    "pdu_data_field_path": "./ros_types/json/geometry_msgs/Twist.json"
+  },
+  {
+    "pdu_type_name": "time",
+    "fields": null,
+    "pdu_data_field_path": "./ros_types/json/builtin_interfaces/Time.json"
+  },
+  {
+    "pdu_type_name": "HakoniwaSimTime",
+    "fields": null,
+    "pdu_data_field_path": "./HakoniwaSimTime.json"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "SampleRobot",
+    "pdu_writer_names": [
+      "SampleRobot_touch_sensorPdu",
+      "SampleRobot_camera_image_jpgPdu",
+      "SampleRobot_scanPdu"
+    ],
+    "pdu_reader_names": [
+      "SampleRobot_cmd_velPdu"
+    ],
+    "core_class_name": null
+  },
+  {
+    "name": "SampleRobotTestDriver",
+    "pdu_writer_names": [],
+    "pdu_reader_names": [],
+    "core_class_name": null
+  }
+]

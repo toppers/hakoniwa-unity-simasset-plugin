@@ -1,0 +1,17 @@
+[
+  {
+    "name": "custom_writer_connector_0",
+    "pdu_name": "SampleRobot_touch_sensorPdu",
+    "method_name": null
+  },
+  {
+    "name": "custom_writer_connector_1",
+    "pdu_name": "SampleRobot_camera_image_jpgPdu",
+    "method_name": null
+  },
+  {
+    "name": "custom_writer_connector_2",
+    "pdu_name": "SampleRobot_scanPdu",
+    "method_name": null
+  }
+]

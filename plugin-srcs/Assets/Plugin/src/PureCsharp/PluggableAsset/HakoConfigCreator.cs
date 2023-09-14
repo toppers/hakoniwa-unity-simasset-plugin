@@ -47,7 +47,7 @@ namespace Hakoniwa.PluggableAsset
                 Formatting = Formatting.Indented
             };
             string json = JsonConvert.SerializeObject(config, settings);
-            System.IO.File.WriteAllText("./core_config.json", json);
+            System.IO.File.WriteAllText("./Assets/Resources/core_config.json", json);
         }
         private static void AddRosMessageType(Dictionary<string, string> map, string typename, string parent_path)
         {
@@ -89,7 +89,7 @@ namespace Hakoniwa.PluggableAsset
                 Formatting = Formatting.Indented
             };
             string json = JsonConvert.SerializeObject(container, settings);
-            System.IO.File.WriteAllText("./pdu_configs.json", json);
+            System.IO.File.WriteAllText("./Assets/Resources/pdu_configs.json", json);
             core_config.pdu_configs_path = "./pdu_configs.json";
 
         }
@@ -158,7 +158,7 @@ namespace Hakoniwa.PluggableAsset
                 Formatting = Formatting.Indented
             };
             string json = JsonConvert.SerializeObject(container, settings);
-            System.IO.File.WriteAllText("./inside_assets.json", json);
+            System.IO.File.WriteAllText("./Assets/Resources/inside_assets.json", json);
             core_config.inside_assets_path = "./inside_assets.json";
 
         }
@@ -201,10 +201,10 @@ namespace Hakoniwa.PluggableAsset
                 Formatting = Formatting.Indented
             };
             string reader_json = JsonConvert.SerializeObject(reader_container, settings);
-            System.IO.File.WriteAllText("./pdu_readers.json", reader_json);
+            System.IO.File.WriteAllText("./Assets/Resources/pdu_readers.json", reader_json);
             core_config.pdu_readers_path = "./pdu_readers.json";
             string writer_json = JsonConvert.SerializeObject(writer_container, settings);
-            System.IO.File.WriteAllText("./pdu_writers.json", writer_json);
+            System.IO.File.WriteAllText("./Assets/Resources/pdu_writers.json", writer_json);
             core_config.pdu_writers_path = "./pdu_writers.json";
         }
 
@@ -270,7 +270,7 @@ namespace Hakoniwa.PluggableAsset
                 Formatting = Formatting.Indented
             };
             string json = JsonConvert.SerializeObject(method_container, settings);
-            System.IO.File.WriteAllText("./rpc_methods.json", json);
+            System.IO.File.WriteAllText("./Assets/Resources/rpc_methods.json", json);
             core_config.rpc_methods_path = "./rpc_methods.json";
 
         }
@@ -309,7 +309,7 @@ namespace Hakoniwa.PluggableAsset
                 Formatting = Formatting.Indented
             };
             string json = JsonConvert.SerializeObject(method_container, settings);
-            System.IO.File.WriteAllText("./shm_methods.json", json);
+            System.IO.File.WriteAllText("./Assets/Resources/shm_methods.json", json);
             core_config.shm_methods_path = "./shm_methods.json";
 
         }
@@ -395,13 +395,13 @@ namespace Hakoniwa.PluggableAsset
                 Formatting = Formatting.Indented
             };
             string reader_json = JsonConvert.SerializeObject(reader_container, settings);
-            System.IO.File.WriteAllText("./reader_connector.json", reader_json);
+            System.IO.File.WriteAllText("./Assets/Resources/reader_connector.json", reader_json);
             core_config.reader_connectors_path = "./reader_connector.json";
             string writer_json = JsonConvert.SerializeObject(writer_container, settings);
-            System.IO.File.WriteAllText("./writer_connector.json", writer_json);
+            System.IO.File.WriteAllText("./Assets/Resources/writer_connector.json", writer_json);
             core_config.writer_connectors_path = "./writer_connector.json";
             string connector_json = JsonConvert.SerializeObject(pdu_channe_container, settings);
-            System.IO.File.WriteAllText("./pdu_channel_connector.json", connector_json);
+            System.IO.File.WriteAllText("./Assets/Resources/pdu_channel_connector.json", connector_json);
             core_config.pdu_channel_connectors_path = "./pdu_channel_connector.json";
         }
     }

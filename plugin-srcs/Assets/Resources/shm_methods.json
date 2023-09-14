@@ -1,0 +1,30 @@
+[
+  {
+    "method_name": "SampleRobotShmReader3",
+    "asset_name": "SampleRobot",
+    "channel_id": 3,
+    "iosize": 48,
+    "is_read": true
+  },
+  {
+    "method_name": "SampleRobotShmWriter0",
+    "asset_name": "SampleRobot",
+    "channel_id": 0,
+    "iosize": 4,
+    "is_read": false
+  },
+  {
+    "method_name": "SampleRobotShmWriter1",
+    "asset_name": "SampleRobot",
+    "channel_id": 1,
+    "iosize": 1229064,
+    "is_read": false
+  },
+  {
+    "method_name": "SampleRobotShmWriter2",
+    "asset_name": "SampleRobot",
+    "channel_id": 2,
+    "iosize": 3044,
+    "is_read": false
+  }
+]

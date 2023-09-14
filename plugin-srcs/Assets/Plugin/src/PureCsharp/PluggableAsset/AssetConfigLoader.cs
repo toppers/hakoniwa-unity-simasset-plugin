@@ -167,7 +167,14 @@ namespace Hakoniwa.PluggableAsset
                 tmp.pdu_type_name = arg_pdu_type_name;
                 tmp.pdu_data_field_path = AssetConfigLoader.core_config.pdu_configs_parent_path + arg_pdu_type_name + ".json";
                 PduDataFieldsConfig cfg = null;
-                string jsonString = File.ReadAllText(tmp.pdu_data_field_path);
+                //string jsonString = File.ReadAllText(tmp.pdu_data_field_path);
+                string fileNameWithoutExtension = tmp.pdu_data_field_path.Replace("./", "").Replace(".json", "");
+                TextAsset jsonTextAsset = Resources.Load<TextAsset>(fileNameWithoutExtension);
+                if (jsonTextAsset == null)
+                {
+                    throw new ArgumentException("can not find path=" + fileNameWithoutExtension);
+                }
+                string jsonString = jsonTextAsset.text;
                 cfg = JsonConvert.DeserializeObject<PduDataFieldsConfig>(jsonString);
                 tmp.fields = cfg.fields;
                 AssetConfigLoader.pdu_configs.Add(tmp);
@@ -315,7 +322,14 @@ namespace Hakoniwa.PluggableAsset
             PduDataFieldsConfig cfg = null;
             if (config.pdu_data_field_path != null)
             {
-                string jsonString = File.ReadAllText(config.pdu_data_field_path);
+                //string jsonString = File.ReadAllText(config.pdu_data_field_path);
+                string fileNameWithoutExtension = config.pdu_data_field_path.Replace("./", "").Replace(".json", "");
+                TextAsset jsonTextAsset = Resources.Load<TextAsset>(fileNameWithoutExtension);
+                if (jsonTextAsset == null)
+                {
+                    throw new ArgumentException("can not find path=" + fileNameWithoutExtension);
+                }
+                string jsonString = jsonTextAsset.text;
                 cfg = JsonConvert.DeserializeObject<PduDataFieldsConfig>(jsonString);
                 config.fields = cfg.fields;
             }
@@ -327,7 +341,15 @@ namespace Hakoniwa.PluggableAsset
         {
             try
             {
-                string jsonString = File.ReadAllText(filepath);
+                //string jsonString = File.ReadAllText(filepath);
+                //Debug.Log("filepath=" + filepath);
+                string fileNameWithoutExtension = filepath.Replace("./", "").Replace(".json", "");
+                TextAsset jsonTextAsset = Resources.Load<TextAsset>(fileNameWithoutExtension);
+                if (jsonTextAsset == null)
+                {
+                    throw new ArgumentException("can not find path=" + fileNameWithoutExtension);
+                }
+                string jsonString = jsonTextAsset.text;
                 var cfg = JsonConvert.DeserializeObject<T>(jsonString);
                 SimpleLogger.Get().Log(Level.INFO, "jsonstring=" + jsonString);
                 return cfg;
@@ -744,7 +766,14 @@ namespace Hakoniwa.PluggableAsset
             LoadPduConfig(core_config.pdu_configs_path);
             if (core_config.ros_topics_path != null)
             {
-                string jsonString = File.ReadAllText(core_config.ros_topics_path);
+                //string jsonString = File.ReadAllText(core_config.ros_topics_path);
+                string fileNameWithoutExtension = core_config.ros_topics_path.Replace("./", "").Replace(".json", "");
+                TextAsset jsonTextAsset = Resources.Load<TextAsset>(fileNameWithoutExtension);
+                if (jsonTextAsset == null)
+                {
+                    throw new ArgumentException("can not find path=" + fileNameWithoutExtension);
+                }
+                string jsonString = jsonTextAsset.text;
                 var container = JsonConvert.DeserializeObject<RosTopicMessageConfigContainer>(jsonString);
                 core_config.ros_topics = container.fields;
             }

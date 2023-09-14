@@ -1,0 +1,64 @@
+{
+  "robots": [
+    {
+      "name": "SampleRobot",
+      "rpc_pdu_readers": [],
+      "rpc_pdu_writers": [],
+      "shm_pdu_readers": [
+        {
+          "type": "geometry_msgs/Twist",
+          "org_name": "cmd_vel",
+          "name": "SampleRobot_cmd_vel",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduReader",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduReaderConverter",
+          "channel_id": 3,
+          "pdu_size": 48,
+          "write_cycle": 10,
+          "method_type": "SHM"
+        }
+      ],
+      "shm_pdu_writers": [
+        {
+          "type": "std_msgs/Bool",
+          "org_name": "touch_sensor",
+          "name": "SampleRobot_touch_sensor",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
+          "channel_id": 0,
+          "pdu_size": 4,
+          "write_cycle": 100,
+          "method_type": "SHM"
+        },
+        {
+          "type": "sensor_msgs/CompressedImage",
+          "org_name": "camera_image_jpg",
+          "name": "SampleRobot_camera_image_jpg",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
+          "channel_id": 1,
+          "pdu_size": 1229064,
+          "write_cycle": 100,
+          "method_type": "SHM"
+        },
+        {
+          "type": "sensor_msgs/LaserScan",
+          "org_name": "scan",
+          "name": "SampleRobot_scan",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
+          "channel_id": 2,
+          "pdu_size": 3044,
+          "write_cycle": 10,
+          "method_type": "SHM"
+        }
+      ]
+    },
+    {
+      "name": "SampleRobotTestDriver",
+      "rpc_pdu_readers": [],
+      "rpc_pdu_writers": [],
+      "shm_pdu_readers": [],
+      "shm_pdu_writers": []
+    }
+  ]
+}

@@ -12,8 +12,11 @@ namespace Hakoniwa.Core.Utils.Logger
         {
             if (default_logger == null)
             {
+#if UNITY_IOS
+                string filepath = null;
+#else
                 string filepath = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "hakoniwa_core.log";
-
+#endif
                 default_logger = new SimpleLogger(filepath, false);
             }
             return default_logger;
@@ -24,6 +27,11 @@ namespace Hakoniwa.Core.Utils.Logger
 
         public SimpleLogger(string logpath, bool append)
         {
+            if (logpath == null)
+            {
+                stream = null;
+                return;
+            }
             var logFile = new FileInfo(logpath);
             if (!Directory.Exists(logFile.DirectoryName))
             {
@@ -35,7 +43,11 @@ namespace Hakoniwa.Core.Utils.Logger
         private void write(Level level, string text)
         {
             string log = string.Format(LOG_FORMAT, DateTime.Now.ToString(DATETIME_FORMAT), level.ToString(), text);
+#if UNITY_IOS
+            Debug.Log(log);
+#else
             stream.WriteLine(log);
+#endif
         }
         public void Log(Level level, string text)
         {

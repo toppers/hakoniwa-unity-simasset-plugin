@@ -1,0 +1,7 @@
+[
+  {
+    "name": "custom_reader_connector_0",
+    "pdu_name": "SampleRobot_cmd_velPdu",
+    "method_name": null
+  }
+]

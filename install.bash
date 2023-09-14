@@ -44,7 +44,7 @@ else
 fi
 
 
-ROS_INS_DIR=plugin-srcs/ros_types
+ROS_INS_DIR=plugin-srcs/Assets/Resources/ros_types
 if [ -d ${ROS_INS_DIR} ]
 then
 	:
