@@ -662,10 +662,7 @@ namespace Hakoniwa.PluggableAsset
         {
             if (filepath != null)
             {
-                if (File.Exists(filepath))
-                {
-                    core_config.shm_methods = LoadJsonFile<ShmMethodConfig[]>(filepath);
-                }
+                core_config.shm_methods = LoadJsonFile<ShmMethodConfig[]>(filepath);
             }
             if (core_config.shm_methods != null)
             {
@@ -697,10 +694,7 @@ namespace Hakoniwa.PluggableAsset
         {
             if (filepath != null)
             {
-                if (File.Exists(filepath))
-                {
-                    core_config.rpc_methods = LoadJsonFile<RpcMethodConfig[]>(filepath);
-                }
+                core_config.rpc_methods = LoadJsonFile<RpcMethodConfig[]>(filepath);
             }
 #if NO_USE_GRPC
 #else
@@ -796,7 +790,7 @@ namespace Hakoniwa.PluggableAsset
                 }
             }
 
-            LoadWorldConfig(core_config.param_world_config_path);
+            //LoadWorldConfig(core_config.param_world_config_path);
             //writer pdu configs
             LoadPduWriters(core_config.pdu_writers_path);
             //reader pdu configs
@@ -818,7 +812,7 @@ namespace Hakoniwa.PluggableAsset
             LoadInsideAssets(core_config.inside_assets_path);
 
             //outside asset configs
-            LoadOutsideAssets(core_config.outside_assets_path);
+            //LoadOutsideAssets(core_config.outside_assets_path);
 
             //Pdu offset configs
             LoadPduOffsetConfig(core_config.pdu_bin_offset_package_dir);

@@ -62,7 +62,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         public static readonly int Odometry_pdu_size = 944;
         public static readonly int TFMessage_pdu_size = 320;
         public static readonly int Image_pdu_size = 1229080;
-        public static readonly int CompressedImage_pdu_size = 1229064;
+        public static readonly int CompressedImage_pdu_size = 102664;
         public static readonly int CameraInfo_pdu_size = 580;
         public static readonly int LaserScan_pdu_size = 3044;
         public static readonly int Bool_pdu_size = 4;
