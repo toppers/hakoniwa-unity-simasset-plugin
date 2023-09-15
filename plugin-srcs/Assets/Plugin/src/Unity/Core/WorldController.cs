@@ -55,8 +55,8 @@ namespace Hakoniwa.Core
             string filePath = AppDomain.CurrentDomain.BaseDirectory;
 #endif
             Debug.Log(filePath);
-            string configPath = filePath + System.IO.Path.DirectorySeparatorChar + "core_config.json";
-
+            //string configPath = filePath + System.IO.Path.DirectorySeparatorChar + "core_config.json";
+            string configPath = "./core_config.json";
             AssetConfigLoader.Load(configPath);
             if (AssetConfigLoader.core_config.cpp_mode != null) {
                 Debug.Log("cpp_mode:" + AssetConfigLoader.core_config.cpp_mode);
