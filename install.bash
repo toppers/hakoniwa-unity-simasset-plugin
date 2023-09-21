@@ -43,8 +43,13 @@ else
 	fi
 fi
 
+if [ -z ${INSTALL_FOR_IOS} ]
+then
+	ROS_INS_DIR=plugin-srcs/ros_types
+else
+	ROS_INS_DIR=plugin-srcs/Assets/Resources/ros_types
+fi
 
-ROS_INS_DIR=plugin-srcs/Assets/Resources/ros_types
 if [ -d ${ROS_INS_DIR} ]
 then
 	:
