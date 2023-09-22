@@ -11,6 +11,7 @@ namespace Hakoniwa.AR.Core
         public string server_ipaddr;
         public int server_portno;
         public int timeout_sec;
+        public float scale = 1;
 
         public string client_ipaddr;
         public int client_portno;
@@ -46,7 +47,7 @@ namespace Hakoniwa.AR.Core
                     var player = obj.GetComponentInChildren<HakoPlayerObject>();
                     if (player == null)
                     {
-                        throw new System.Exception("Not Found avator");
+                        throw new System.Exception("Not Found player");
                     }
                     this.playerMap.Add(obj.name, player);
                 }
@@ -63,14 +64,14 @@ namespace Hakoniwa.AR.Core
             var data = this.server.RecvData();
             if (data != null)
             {
-                //Debug.Log("recv data len=" + data.Length);
+                Debug.Log("recv data len=" + data.Length);
                 for (int off = 0; off < data.Length;)
                 {
                     HakoPositionAndRotation pr = new HakoPositionAndRotation();
-                    int size = pr.Decode(data, off);
+                    int size = pr.Decode(data, off, this.scale);
                     //Debug.Log("off=" + off + " size=" + size);
                     off += size;
-                    //Debug.Log("avator name=" + pr.name);
+                    Debug.Log("avator name=" + pr.name);
                     var obj = this.avatorMap[pr.name];
                     obj.SetPosAndRot(pr);
                 }
@@ -80,7 +81,7 @@ namespace Hakoniwa.AR.Core
             {
                 var pr = this.playerMap[name].GetPosAndRot();
                 {
-                    var pr_data = pr.Encode();
+                    var pr_data = pr.Encode(this.scale);
                     dataBytesList.Add(pr_data);
                 }
                 this.playerMap[name].SetPrevValue(pr);
