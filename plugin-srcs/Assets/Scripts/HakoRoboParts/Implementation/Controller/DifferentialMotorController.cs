@@ -20,7 +20,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         private IRobotPartsMotor [] motors = new IRobotPartsMotor[(int)MotorType.MotorType_Num];
         private PduIoConnector pdu_io;
         private IPduReader pdu_reader;
-        private float steering_sensitivity = 1.5f;                // ?o???l
+        public float steering_sensitivity = 1.5f;                // ?o???l
 
         public string topic_type = "geometry_msgs/Twist";
         public string topic_name = "cmd_vel";
