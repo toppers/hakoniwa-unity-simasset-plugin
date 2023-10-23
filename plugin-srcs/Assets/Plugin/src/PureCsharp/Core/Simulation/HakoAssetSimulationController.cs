@@ -196,7 +196,8 @@ namespace Hakoniwa.Core.Simulation
         {
             SimpleLogger.Get().Log(Level.INFO, "StartCallback");
             inside_asset_list = asset_manager.RefInsideAssetList();
-            HakoCppWrapper.asset_start_feedback(my_asset_name, true);
+            bool ret = HakoCppWrapper.asset_start_feedback(my_asset_name, true);
+            SimpleLogger.Get().Log(Level.INFO, "StartCallback result: " + ret);
         }
         private void StopCallback()
         {

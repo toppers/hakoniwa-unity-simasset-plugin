@@ -190,7 +190,9 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
             {
                 case "int8":
                     //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + src.GetDataInt8(elm.field_name));
-                    tmp_bytes = BitConverter.GetBytes(src.GetDataInt8(elm.field_name));
+                    //tmp_bytes = BitConverter.GetBytes(src.GetDataInt8(elm.field_name));
+                    sbyte sint8v = src.GetDataInt8(elm.field_name);
+                    tmp_bytes = new byte[] { (byte)sint8v };
                     break;
                 case "int16":
                     //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + src.GetDataInt16(elm.field_name));
@@ -206,7 +208,9 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     break;
                 case "uint8":
                     //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + src.GetDataUInt8(elm.field_name));
-                    tmp_bytes = BitConverter.GetBytes(src.GetDataUInt8(elm.field_name));
+                    //tmp_bytes = BitConverter.GetBytes(src.GetDataUInt8(elm.field_name));
+                    var uint8v = src.GetDataUInt8(elm.field_name);
+                    tmp_bytes = new byte[] { uint8v };
                     break;
                 case "uint16":
                     //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + src.GetDataUInt16(elm.field_name));
@@ -240,7 +244,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     throw new InvalidCastException("Error: Can not found ptype: " + elm.type_name);
             }
             var woff = off + elm.offset;
-            //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " : " + woff);
+            //SimpleLogger.Get().Log(Level.INFO, elm.type_name + " : " + elm.field_name + " : " + woff);
             //SimpleLogger.Get().Log(Level.INFO, "dst.len=" + dst_buffer.Length);
             //SimpleLogger.Get().Log(Level.INFO, "src.len=" + tmp_bytes.Length);
             Buffer.BlockCopy(tmp_bytes, 0, dst_buffer, woff, tmp_bytes.Length);

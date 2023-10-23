@@ -29,11 +29,11 @@ namespace Hakoniwa.PluggableAsset.Communication.Method.Shm
                 throw new ArgumentException("Invalid data type");
             }
             byte[] buf = binary.GetData();
-            if (buf.Length != this.shm_config.io_size)
+            if (buf.Length > this.shm_config.io_size)
             {
                 throw new ArgumentException("Invalid io_size:" + buf.Length);
             }
-            Marshal.Copy(buf, 0, buffer, buffer_size);
+            Marshal.Copy(buf, 0, buffer, buf.Length);
             bool ret = HakoCppWrapper.asset_write_pdu(this.asset_name, this.shm_config.asset_name, shm_config.channel_id, buffer, (uint)shm_config.io_size);
             if (ret == false)
             {
