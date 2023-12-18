@@ -36,7 +36,7 @@ else
 		:
 	else
 		mkdir ${PARENT_DIR}/Libs
-		wget https://github.com/toppers/hakoniwa-core-cpp-client/releases/download/v1.0.3/libshakoc.${ARCH_TYPE}.${LIB_EXT}
+		wget https://github.com/toppers/hakoniwa-core-cpp-client/releases/download/v1.0.4/libshakoc.${ARCH_TYPE}.${LIB_EXT}
 		mv libshakoc.${ARCH_TYPE}.${LIB_EXT} ${PARENT_DIR}/Libs/libshakoc.${LIB_EXT}
 		# REMOVE gRPC codes
 		rm -rf plugin-srcs/Assets/Plugin/src/PureCsharp/Gen*
