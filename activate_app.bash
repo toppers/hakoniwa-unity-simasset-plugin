@@ -37,7 +37,7 @@ then
     cd ${APP_DIRPATH}
     APP_NAME=`find .  -name "*.exe"`
     ./${APP_NAME}
-elif [ ${OS_TYPE} = "Darwin" ]
+elif [ ${OS_TYPE} = "Mac" ]
 then
     cd ${APP_DIRPATH}
     APP_NAME=`find ./Contents/MacOS  -type f`
