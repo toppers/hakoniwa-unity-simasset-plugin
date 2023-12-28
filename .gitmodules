@@ -1,3 +1,6 @@
 [submodule "spec"]
 	path = hakoniwa-core-spec
 	url = https://github.com/toppers/hakoniwa-core-spec.git
+[submodule "third-party/mustache"]
+	path = third-party/mustache
+	url = https://github.com/tests-always-included/mo.git
