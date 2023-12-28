@@ -40,7 +40,8 @@ then
 elif [ ${OS_TYPE} = "Mac" ]
 then
     cd ${APP_DIRPATH}
-    APP_NAME=`find ./Contents/MacOS  -type f`
+    BASE_NAME=`basename ${APP_DIRPATH}`
+    APP_NAME=`find ./${BASE_NAME}.app/Contents/MacOS  -type f`
     ./${APP_NAME}
 else
     echo "ERROR: not supported os type: ${OS_TYPE}"
