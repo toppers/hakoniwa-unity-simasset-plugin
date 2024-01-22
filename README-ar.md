@@ -166,6 +166,17 @@ Package Managerで、Unityのレジストリを選択します。
 
 ![スクリーンショット 2023-09-21 12 30 01](https://github.com/toppers/hakoniwa-unity-picomodel/assets/164193/e9435d15-047f-4c87-ac65-b56360f9c339)
 
+最新バージョンd値は、`Apple ARKit XR Plugin` のエラーが出ることがあります。
+
+```
+BuildFailedException: ARKit requires a Camera Usage Description (Player Settings > iOS > Other Settings > Camera Usage Description)
+```
+
+この場合は、エラー内容に従って、`Camera Usage Description` に何か文字列を入れましょう。今回は、`Hakoniwa` と入れておきます。
+
+![スクリーンショット 2024-01-23 7 20 05](https://github.com/toppers/hakoniwa-unity-simasset-plugin/assets/164193/f4e46607-8ab4-4695-a45f-182c5b41014f)
+
+
 ## Project Settings
 
 `XR Plugin-in Management` の `Apple ARKit` を選択します。
