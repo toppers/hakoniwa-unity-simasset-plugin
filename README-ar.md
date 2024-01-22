@@ -51,17 +51,83 @@ AR端末と箱庭側で登場するアクターは下図のとおりです。
 
 ## 通信データ
 
-AR端末と箱庭の間でやり取りする通信データは、Playerの位置と姿勢情報です。
+AR端末と箱庭の間でやり取りする通信データは、Playerの名前、位置。姿勢および内部状態です。
 
+* name：名前
+* nameLength：名前の長さ
 * position(x, y, z)：Unity座標系での位置
 * rotation(x, y, z)：Unity座標系での姿勢
+* state：内部状態（int型）
 
 通信データの送信周期は、Unityの`Fixed Timestep`です。
 
 ## 内部クラス
 
-ライブラリを構成する主な内部クラスの一覧と、それらの責務や相互関係について説明します。
+内部クラス設計は下図のとおりです。
+
+![スクリーンショット 2024-01-22 10 42 58](https://github.com/toppers/hakoniwa-unity-simasset-plugin/assets/164193/5916f9ca-75d8-4de1-8109-3f1c9348247f)
+
+ソース配置場所：
+
+https://github.com/toppers/hakoniwa-unity-simasset-plugin/tree/main/plugin-srcs/Assets/Plugin/src/Unity/AR
+
+Unityのゲームオブジェクトにアタッチするクラスは以下のとおり。
+
+* HakoObjectSynchronizer
+  * Emptyなゲームオブジェクトを作成し、アタッチします。
+* ArAvatorObject
+  * Avator対象となるゲームオブジェクトにアタッチします。
+* ArPlayerObject
+  * Player対象となるゲームオブジェクトにアタッチします。
 
 # 設定情報
 
-このセクションでは、ライブラリの設定方法について詳細を提供します。初期設定、カスタマイズ可能なオプション、およびそれらの影響について説明します。
+本ライブラリを利用するには、アタッチしたスクリプトに対して、各種設定を追加で行う必要があります。
+
+## 箱庭側
+
+`AR`(名前は任意です)というEmptyなゲームオブジェクトをHierachyビューに配置し、`HakoObjectSynchronizer` をアタッチします。
+
+![スクリーンショット 2024-01-22 10 48 40](https://github.com/toppers/hakoniwa-unity-simasset-plugin/assets/164193/9061614a-edb9-4d5d-a3ac-335975d6e611)
+
+次に、Inspectorビューを参照し、`HakoObjectSynchronizer` の設定項目を埋めます。
+
+* Players
+  * `ArPlayerObject`をアタッチしたゲームオブジェクトを配列要素として全て追加します。
+* Avators
+  * `ArPlayerObject`をアタッチしたゲームオブジェクトを配列要素として全て追加します。
+* Server_ipaddr
+  * 箱庭を実行するマシンのIPアドレスを設定します。
+* Server_portno
+  * 箱庭を実行するマシンの受信UDPポート番号を設定します。54001がデフォルトです。
+* Timeout_sec：UDP受信スレッドのタイムアウト値です（デフォルトのままで、変更不要です）。
+* Scale：基本的には`1`を設定してください。もし、箱庭とAR端末とで縮尺を変更したい場合に利用できます。
+* Client_ipaddr
+  * AR端末のIPアドレスを設定します。
+* Client_portno
+  * AR端末の受信UDPポート番号を設定します。54002がデフォルトです。
+
+
+## AR端末側
+
+
+`AR`(名前は任意です)というEmptyなゲームオブジェクトをHierachyビューに配置し、`HakoObjectSynchronizer` をアタッチします。
+
+![スクリーンショット 2024-01-22 10 59 45](https://github.com/toppers/hakoniwa-unity-simasset-plugin/assets/164193/52690874-3d63-4006-96c7-ba51a8f0ef7a)
+
+次に、Inspectorビューを参照し、`HakoObjectSynchronizer` の設定項目を埋めます。
+
+* Players
+  * `ArPlayerObject`をアタッチしたゲームオブジェクトを配列要素として全て追加します。
+* Avators
+  * `ArPlayerObject`をアタッチしたゲームオブジェクトを配列要素として全て追加します。
+* Server_ipaddr
+  * AR端末のIPアドレスを設定します。
+* Server_portno
+  * AR端末の受信UDPポート番号を設定します。54002がデフォルトです。
+* Timeout_sec：UDP受信スレッドのタイムアウト値です（デフォルトのままで、変更不要です）。
+* Scale：基本的には`1`を設定してください。もし、箱庭とAR端末とで縮尺を変更したい場合に利用できます。
+* Client_ipaddr
+  * 箱庭を実行するマシンのIPアドレスを設定します。
+* Client_portno
+  * 箱庭を実行するマシンの受信UDPポート番号を設定します。54001がデフォルトです。
