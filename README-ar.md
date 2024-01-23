@@ -221,7 +221,43 @@ Client_ipaddr には、iphone の IPアドレスを設定します。
 ![スクリーンショット 2023-09-21 12 45 42](https://github.com/toppers/hakoniwa-unity-picomodel/assets/164193/7f593f6a-1e65-482f-bb18-3d15f7977c9c)
 
 
-# Xcode ビルド手順
+
+# iphone へのインストール手順
+
+準備物：
+
+* iphone
+  * Appleアカウント認証が必要になります
+* Mac
+
+以下のステップで設定およびインストールします。
+
+* iphoneをソフトウェアアップデートをする（最新にする）
+  * 理由：https://harumi.sakura.ne.jp/wordpress/2018/10/22/debug/
+* iphoneとMacをUSB接続し、Macを信頼する
+* [iphoneをデベロッパーモードにする](#iphoneをデベロッパーモードにする)
+* [XCodeで認証する](#XCodeで認証する)
+* [Xcodeでのビルド](#Xcodeでのビルド)
+* [当該アプリを信頼する](#当該アプリを信頼する)
+
+## iphoneをデベロッパーモードにする
+
+`設定` => `プライバシーとセキュリティ` => `デベロッパーモード`を `オン` にしてください。
+
+もし、`デベロッパーモード`が表示されない場合は、「[XCodeで認証する](#XCodeで認証する)」と「[Xcodeでのビルド](#Xcodeでのビルド)」を先に実行することで表示されるようになります。
+
+参考：https://zenn.dev/m_j_t/articles/17f6a8631b88f8
+
+## XCodeで認証する
+
+Xcodeの`Signing & Capabilities` を開き、下図のように指定してください。
+
+<img width="838" alt="スクリーンショット 2024-01-23 9 02 12" src="https://github.com/toppers/hakoniwa-unity-simasset-plugin/assets/164193/640021bb-7370-48b9-b00c-92239eb84271">
+
+注意：Bundle Identifier は、インストール対象端末後に変える必要がある
+
+
+## Xcode でのビルド
 
 デベロッパモードのiphoneとMacをUSB接続します。
 
@@ -232,8 +268,6 @@ Client_ipaddr には、iphone の IPアドレスを設定します。
 
 ![スクリーンショット 2023-09-21 12 49 25](https://github.com/toppers/hakoniwa-unity-picomodel/assets/164193/3c3b15a3-da45-4457-8d3a-27e3287ce925)
 
-# iphone 側の設定
+## 当該アプリを信頼する
 
 `設定` => `一般` => `VPNとデバイス管理`を開き、当該ARアプリ(model)を信頼するようにしてください。
-
-
