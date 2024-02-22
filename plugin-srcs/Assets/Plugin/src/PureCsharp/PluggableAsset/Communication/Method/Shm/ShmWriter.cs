@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Hakoniwa.PluggableAsset.Communication.Method.Shm
 {
-    class ShmWriter : IIoWriter
+    class ShmWriter : IIoWriter, IDisposable
     {
         public string Name { get; internal set; }
         private IntPtr buffer;
@@ -64,8 +64,25 @@ namespace Hakoniwa.PluggableAsset.Communication.Method.Shm
             bool ret = HakoCppWrapper.asset_create_pdu_lchannel(this.shm_config.asset_name, this.shm_config.channel_id, (uint)shm_config.io_size);
             if (ret == false)
             {
+                Marshal.FreeHGlobal(this.buffer);
                 throw new ArgumentException("Can not create pdu channel!! channel_id=" + this.shm_config.channel_id);
             }
         }
+        public void Dispose()
+        {
+            if (buffer != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(buffer);
+                buffer = IntPtr.Zero;
+            }
+            GC.SuppressFinalize(this);
+        }
+
+        ~ShmWriter()
+        {
+            Dispose();
+        }
+
+
     }
 }
