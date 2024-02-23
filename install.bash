@@ -1,21 +1,33 @@
 #!/bin/bash
 
+INSTALL_WIN="FALSE"
+if [ $# -eq 1 ]
+then
+	if [ $1 = "win" ]
+	then
+		echo "INFO: installing windows"
+		INSTALL_WIN="TRUE"
+	elif [ $1 != "win" ]
+	then
+		echo "Usage: $0 [win]"
+		exit 1
+	fi
+fi
 source detect_os_type.bash
 
-
-
-CURR_DIR=`pwd`
+CPP_RELEASE_VER=v1.2.0
+CURR_DIR=$(pwd)
 PARENT_DIR=plugin-srcs/Assets/Plugin
-if [ ${OS_TYPE} = "wsl2" ]
+if [ ${INSTALL_WIN} = "FALSE" -a ${OS_TYPE} = "wsl2" ]
 then
-	if [ -d  ${PARENT_DIR}/Libs ]
+	if [ -d "${PARENT_DIR}/Libs" ]
 	then
 		:
 	else
-		wget https://github.com/toppers/hakoniwa-unity-simasset-plugin/releases/download/v0.0.1/Libs.zip
+		wget https://github.com/toppers/hakoniwa-unity-simasset-plugin/releases/download/v0.0.1/Libs.zip || { echo "ERROR: failed to download"; exit 1; }
 		mv Libs.zip ${PARENT_DIR}/
 		cd ${PARENT_DIR}/
-		unzip Libs.zip
+		unzip Libs.zip || { echo "ERROR: failed to unzip"; exit 1; }
 		rm -f Libs.zip
 		cd ${CURR_DIR}
 	fi
@@ -23,21 +35,26 @@ else
 	if [ ${OS_TYPE} = "Mac" ]
 	then
 		LIB_EXT=dylib
-		which wget
-		if [ $? -ne 0 ]
+		which wget || brew install wget
+		if [ $ARCH_TYPE = "arm64" ]
 		then
-			brew install wget
+			LIB=libshakoc.arm64.dylib
+		else
+			LIB=libshakoc.dylib
 		fi
+	elif [ $INSTALL_WIN = "TRUE" ]
+	then
+		LIB=shakoc.dll
 	else
-		LIB_EXT=so
+		LIB=libshakoc.so
 	fi
 	if [ -d  ${PARENT_DIR}/Libs ]
 	then
 		:
 	else
 		mkdir ${PARENT_DIR}/Libs
-		wget https://github.com/toppers/hakoniwa-core-cpp-client/releases/download/v1.0.3/libshakoc.${ARCH_TYPE}.${LIB_EXT}
-		mv libshakoc.${ARCH_TYPE}.${LIB_EXT} ${PARENT_DIR}/Libs/libshakoc.${LIB_EXT}
+		wget https://github.com/toppers/hakoniwa-core-cpp-client/releases/download/${CPP_RELEASE_VER}/${LIB} || { echo "ERROR: failed to download"; exit 1; }
+		mv ${LIB} ${PARENT_DIR}/Libs/
 		# REMOVE gRPC codes
 		rm -rf plugin-srcs/Assets/Plugin/src/PureCsharp/Gen*
 	fi
@@ -61,10 +78,10 @@ if [ -d ${ROS_INS_DIR}/json ]
 then
 	:
 else
-	wget https://github.com/toppers/hakoniwa-ros2pdu/releases/download/v1.0.0/json.zip
+	wget https://github.com/toppers/hakoniwa-ros2pdu/releases/download/v1.0.0/json.zip || { echo "ERROR: failed to download"; exit 1; }
 	mv json.zip ${ROS_INS_DIR}/
 	cd ${ROS_INS_DIR}/
-	unzip json.zip
+	unzip json.zip || { echo "ERROR: failed to unzip"; exit 1; }
 	rm -f json.zip
 	cd ${CURR_DIR}
 fi
@@ -73,10 +90,10 @@ if [ -d ${ROS_INS_DIR}/offset ]
 then
 	:
 else
-	wget https://github.com/toppers/hakoniwa-ros2pdu/releases/download/v1.0.0/offset.zip
+	wget https://github.com/toppers/hakoniwa-ros2pdu/releases/download/v1.0.0/offset.zip || { echo "ERROR: failed to download"; exit 1; }
 	mv offset.zip ${ROS_INS_DIR}/
 	cd ${ROS_INS_DIR}/
-	unzip offset.zip
+	unzip offset.zip || { echo "ERROR: failed to unzip"; exit 1; }
 	rm -f offset.zip
 	cd ${CURR_DIR}
 fi
