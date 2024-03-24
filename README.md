@@ -71,8 +71,6 @@ Unityのバージョン違いに起因するメッセージ（"Opening Project i
 
 ### 箱庭コンフィグファイルの生成
 
-https://qiita.com/sakano/items/6fa16af5ceab2617fc0f
-
 Unity起動したら、`Work` シーンをダブルクリックしてください。
 
 ![image](https://user-images.githubusercontent.com/164193/236663723-e50cfc04-a6fb-4794-86c2-95adf65f7161.png)
@@ -95,6 +93,8 @@ Unity起動したら、`Work` シーンをダブルクリックしてくださ�
 
 Unityのシミュレーション開始ボタンをクリックするとシミュレーションが始まります。
 
+![スクリーンショット 2024-03-25 6 45 24](https://github.com/toppers/hakoniwa-unity-simasset-plugin/assets/164193/7856e1e3-3267-49b9-8766-81081f1d7465)
+
 この状態で、キーボードで以下のキー押下するとロボットが動きます。
 
 * ↑：前進。キー押下し続けると加速します。
@@ -102,6 +102,10 @@ Unityのシミュレーション開始ボタンをクリックするとシミュ
 * →：右旋回
 * ←：左旋回
 * スペースキー：停止
+
+https://github.com/toppers/hakoniwa-unity-simasset-plugin/assets/164193/8f8cc9a0-fa03-41f8-9ef1-a3a24a8bbd07
+
+
 
 ## TODO
 
