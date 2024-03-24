@@ -10,60 +10,26 @@
 ## 前提条件
 
 * OS
-  * Windows/WSL2
+  * OS
+    * Windows, MacOS, Ubuntu
+  * ツール類
     * net-tools がインストールされていること
     * unzip がインストールされていること
+    * git がインストールされていること
 * Unity Hub
-  * Unity Hub 3.4.1以降
+  * Unity Hub 3.7.0以降
 * Unity
-  * Unity 2021.3.7f1以降
-* [hakoniwa-base](https://github.com/toppers/hakoniwa-base/tree/ai)のインストール
-  * 詳細は[こちら](https://qiita.com/kanetugu2018/items/65a57b6bc4bbab7e43d5#%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E6%89%8B%E9%A0%86)を参照
-
-## 事前準備
-
-`hakoniwa-base`をクローンします。
-
-```
-git clone -b ai --recursive https://github.com/toppers/hakoniwa-base.git
-```
-
-次に、以下のファイルを編集します。
-
-```
-hakoniwa-base/workspace/runtime/asset_def.txt
-```
-
-ファイルの内容を以下のように変更してください。
-
-```
-dev/ai/sample_robo.py:mqtt
-```
-
-変更差分：
-
-```
--dev/ai/ai_qtable.py
-+dev/ai/sample_robo.py:mqtt
-```
+  * Unity 2022.3.10f1以降
 
 ## インストール手順
 
-本リポジトリを `hakoniwa-base` と同じディレクトリ階層でクローンします。
+本リポジトリを クローンします。
 
 ```
 git clone https://github.com/toppers/hakoniwa-unity-simasset-plugin.git
 ```
 
-成功するとこうなります。
-
-```
-$ ls
-hakoniwa-base
-hakoniwa-unity-simasset-plugin
-```
-
-次に、必要な dll をインストールします。
+次に、必要なライブラリ等をインストールします。
 
 ```
 cd hakoniwa-unity-simasset-plugin
@@ -73,14 +39,40 @@ cd hakoniwa-unity-simasset-plugin
 bash install.bash
 ```
 
-Unity Hub から、`hakoniwa-unity-simasset-plugin/plugin-srcs` を開き、Unityを起動してください。
+### Unity起動
 
-なお、Unity起動時に`Newtonsoft.Json`がないというエラーが出る場合があります。
-この場合は、以下の記事を参考にして、Unityのパッケージマネージャから`Newtonsoft.Json`をインストールしてください。
+この状態で Unity Hub で当該プロジェクトを開きましょう。
+
+注意：Unityエディタは、当該CPUアーキテクチャに対応したものをインストールしてご利用ください。
+
+対象フォルダ：plugin-srcs
+
+Unityのバージョン違いに起因するメッセージ（"Opening Project in Non-Matching Editor Installation"）が出る場合は、「Continue」として問題ありません。
+
+以下のダイアログが出ますが、`Continue` してください。
+
+![image](https://github.com/toppers/hakoniwa-unity-drone-model/assets/164193/e1fbc477-4edc-4e39-ab15-ccd6f0707f33)
+
+
+次に、以下のダイアログが出ますので、`Ignore` してください。
+
+![image](https://github.com/toppers/hakoniwa-unity-drone-model/assets/164193/7c03ae41-f988-44cb-9ac1-2263507d254d)
+
+
+成功するとこうなります。
+
+![image](https://github.com/toppers/hakoniwa-unity-drone-model/assets/164193/50398cfa-f6fc-4eef-9679-5442bbd9de76)
+
+起動直後の状態ですと、コンソール上にたくさんエラーが出ています。原因は以下の２点です。
+リンク先を参照して、順番に対応してください。
+
+* [Newtonsoft.Json が不足している](https://github.com/toppers/hakoniwa-document/tree/main/troubleshooting/unity#unity%E8%B5%B7%E5%8B%95%E6%99%82%E3%81%ABnewtonsoftjson%E3%81%8C%E3%81%AA%E3%81%84%E3%81%A8%E3%81%84%E3%81%86%E3%82%A8%E3%83%A9%E3%83%BC%E3%81%8C%E5%87%BA%E3%82%8B)
+* [gRPC のライブラリ利用箇所がエラー出力している](https://github.com/toppers/hakoniwa-document/blob/main/troubleshooting/unity/README.md#grpc-%E3%81%AE%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E5%88%A9%E7%94%A8%E7%AE%87%E6%89%80%E3%81%8C%E3%82%A8%E3%83%A9%E3%83%BC%E5%87%BA%E5%8A%9B%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B)(Mac版のみ)
+
 
 https://qiita.com/sakano/items/6fa16af5ceab2617fc0f
 
-Unity起動したら、`Hakoniwa` シーンをダブルクリックしてください。
+Unity起動したら、`Work` シーンをダブルクリックしてください。
 
 ![image](https://user-images.githubusercontent.com/164193/236663723-e50cfc04-a6fb-4794-86c2-95adf65f7161.png)
 
@@ -93,60 +85,10 @@ Unity起動したら、`Hakoniwa` シーンをダブルクリックしてくだ�
 
 ![image](https://user-images.githubusercontent.com/164193/236663767-01732e69-7797-4658-a09b-bd20bc0e22cb.png)
 
-この状態で、`Window/Hakoniwa/Generate`をクリックすると、箱庭のコンフィグ情報が自動生成されます。
+この状態で、`Window/Hakoniwa/GenerateDebug`をクリックすると、箱庭のコンフィグ情報が自動生成されます。
 
 ![image](https://user-images.githubusercontent.com/164193/236663809-ffd548ee-aa20-4324-a704-f2a1df7c5634.png)
 
-## 動作確認方法
-
-`SampleRobo`をお好きな場所に移動させてください。
-
-次に、`hakoniwa-base`で以下のコマンドを実行します。
-
-```
- bash docker/run.bash runtime
-```
-
-ログ：
-```
-ASSET_DEF=asset_def.txt
-INFO: ACTIVATING MOSQUITTO
-[38052.770022]~DLT~    9~INFO     ~FIFO /tmp/dlt cannot be opened. Retrying later...
-INFO: ACTIVATING HAKO-MASTER
-OPEN RECIEVER UDP PORT=172.25.195.216:54001
-OPEN SENDER UDP PORT=172.25.195.216:54002
-mqtt_url=mqtt://172.25.195.216:1883
-PUBLISHER Connecting to the MQTT server...
-PUBLISHER CONNECTED to the MQTT server...
-delta_msec = 20
-max_delay_msec = 100
-INFO: shmget() key=255 size=80768
-Server Start: 172.25.195.216:50051
-INFO: ACTIVATING :dev/ai/sample_robo.py
-START TB3 TEST
-LOADED: SampleRobo
-INFO: SampleRobo create_lchannel: logical_id=3 real_id=0 size=48
-subscribe:channel_id=0
-subscribe:typename=Bool
-subscribe:pdu_size=4
-subscribe:channel_id=1
-subscribe:typename=CompressedImage
-subscribe:pdu_size=1229064
-subscribe:channel_id=2
-subscribe:typename=LaserScan
-subscribe:pdu_size=3044
-WAIT START:
-```
-
-その後、Unityのシミュレーションを開始します。
-
-![image](https://user-images.githubusercontent.com/164193/236664202-1b9fcd17-98b9-41bb-85dd-5a1ad1594d3b.png)
-
-この状態で、`START`ボタンを押下して、`Sene`タブをみると、下図のようにロボットが動き出しているのが見えます。
-
-![image](https://user-images.githubusercontent.com/164193/236664228-1e7b3799-f7d1-43d7-acbb-280ed672c44d.png)
-
-シミュレーションを終わる時は、Unityのシミュレーションを停止し、hakoniwa-baseの実行コマンドを `CTRL+C`で停止してください。
 
 ## TODO
 
