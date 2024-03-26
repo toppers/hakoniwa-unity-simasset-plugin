@@ -43,7 +43,11 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts.TestDriver
             if (this.root == null)
             {
                 this.my_renderer = GetComponent<Renderer>();
-                this.initial_color = GetComponent<Renderer>().material.color;
+                if (my_renderer == null)
+                {
+                    this.my_renderer = GetComponentInChildren<Renderer>();
+                }
+                this.initial_color = my_renderer.material.color;
                 this.root = tmp;
                 this.root_name = string.Copy(this.root.transform.name);
                 this.pdu_io = PduIoConnector.Get(roboname);
@@ -78,11 +82,11 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts.TestDriver
         {
             if (this.isTouched)
             {
-                GetComponent<Renderer>().material.color = Color.red;
+                my_renderer.material.color = Color.red;
             }
             else
             {
-                GetComponent<Renderer>().material.color = Color.blue;
+                my_renderer.material.color = Color.blue;
             }
         }
     }
