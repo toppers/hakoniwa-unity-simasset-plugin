@@ -1267,7 +1267,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6332022541013226337, guid: 82a5a041e14b7504083ce94c9f4b13d7, type: 3}
       propertyPath: topic_name
-      value: 'bumper_sensor '
+      value: bumper_sensor
       objectReference: {fileID: 0}
     - target: {fileID: 6332022541013226337, guid: 82a5a041e14b7504083ce94c9f4b13d7, type: 3}
       propertyPath: comm_method
