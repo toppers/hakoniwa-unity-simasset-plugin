@@ -1371,6 +1371,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: L-Wheel
       objectReference: {fileID: 0}
+    - target: {fileID: 4453105456407553900, guid: 321461d600ad3eb48b8e665fa73b8ed8, type: 3}
+      propertyPath: m_XDrive.target
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4453105456407553900, guid: 321461d600ad3eb48b8e665fa73b8ed8, type: 3}
+      propertyPath: m_XDrive.targetVelocity
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4453105456407553901, guid: 321461d600ad3eb48b8e665fa73b8ed8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
