@@ -112,7 +112,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 
         public bool isAttachedSpecificController()
         {
-            return true;
+            return false;
         }
 
         public void UpdateSensorValues()
