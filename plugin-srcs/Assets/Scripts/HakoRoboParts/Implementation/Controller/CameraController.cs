@@ -16,8 +16,8 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         private GameObject sensor;
         private RenderTexture RenderTextureRef;
         private Texture2D tex;
-        private int width = 640;
-        private int height = 480;
+        public int width = 640;
+        public int height = 480;
         private byte[] raw_bytes;
         private byte[] compressed_bytes;
         private string sensor_name;
