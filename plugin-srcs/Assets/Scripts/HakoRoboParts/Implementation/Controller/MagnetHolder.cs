@@ -126,10 +126,6 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             if (request)
             {
                 this.magnet_on = this.pdu_reader.GetReadOps().GetDataBool("magnet_on");
-                //reply
-                this.pdu_reader.GetWriteOps().Ref("header").SetData("request", false);
-                this.pdu_reader.GetWriteOps().Ref("header").SetData("result", true);
-                this.pdu_reader.GetWriteOps().Ref("header").SetData("result_code", 0);
             }
         }
         public void DoControl()
