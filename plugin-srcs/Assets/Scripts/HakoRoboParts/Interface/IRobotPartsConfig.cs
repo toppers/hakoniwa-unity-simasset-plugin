@@ -89,7 +89,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         public RobotPartsConfig[] shm_pdu_readers = null;
         public RobotPartsConfig[] shm_pdu_writers = null;
     }
-    static class ConstantValues
+    public static class ConstantValues
     {
         public static readonly string pdu_reader_class = "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduReader";
         public static readonly string pdu_writer_class = "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter";
