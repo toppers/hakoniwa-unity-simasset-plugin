@@ -17,8 +17,8 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 
 
         public static bool is_debug = true;
-        private float contact_distance = 500f; /* cm */
-        public float distanceValue; /* cm */
+        private float contact_distance = 10.0f; /* m */
+        public float distanceValue; /* m */
         private Quaternion init_angle;
 
         public void Initialize(object root)
@@ -97,10 +97,10 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         public void UpdateSensorValues()
         {
             this.UpdateSensorValuesLocal();
-            this.pdu_writer.GetWriteOps().SetData("forward_r", (short)(this.forward_r * 10));
-            this.pdu_writer.GetWriteOps().SetData("forward_l", (short)(this.foward_l * 10));
-            this.pdu_writer.GetWriteOps().SetData("left", (short)(this.left * 10));
-            this.pdu_writer.GetWriteOps().SetData("right", (short)(this.right * 10));
+            this.pdu_writer.GetWriteOps().SetData("forward_r", (short)(this.forward_r * 100));
+            this.pdu_writer.GetWriteOps().SetData("forward_l", (short)(this.foward_l * 100));
+            this.pdu_writer.GetWriteOps().SetData("left", (short)(this.left * 100));
+            this.pdu_writer.GetWriteOps().SetData("right", (short)(this.right * 100));
         }
         public string topic_type = "pico_msgs/LightSensor";
         public string topic_name = "ultrasonic_sensor";
