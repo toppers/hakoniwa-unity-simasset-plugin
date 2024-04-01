@@ -587,7 +587,7 @@ GameObject:
   - component: {fileID: 6091439905707371806}
   - component: {fileID: 7527223083148576893}
   m_Layer: 0
-  m_Name: BuggageTransporter
+  m_Name: BaggageTransporter
   m_TagString: HakoAssetRoot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
