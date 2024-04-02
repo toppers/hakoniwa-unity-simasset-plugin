@@ -15,14 +15,11 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         private IRobotPartsMotor [] motors = new IRobotPartsMotor[(int)MotorType.MotorType_Num];
         private PduIoConnector pdu_io;
         private IPduReader pdu_reader;
-        public float steering_sensitivity = 1.5f;
 
         public string topic_type = "geometry_msgs/Twist";
         public string topic_name = "cmd_vel";
-        public int update_cycle = 10;
-        public float motor_interval_distance = 0.160f; // 16cm
+        public int update_cycle = 1;
 
-        private int count = 0;
 
         public RosTopicMessageConfig[] getRosConfig()
         {
@@ -61,50 +58,13 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 {
                     throw new ArgumentException("can not found pdu_reader:" + pdu_reader_name);
                 }
-                this.motors[(int)MotorType.MotorType_Left] = this.transform.Find("Interface-L").GetComponentInChildren<IRobotPartsMotor>();
-                this.motors[(int)MotorType.MotorType_Right] = this.transform.Find("Interface-R").GetComponentInChildren<IRobotPartsMotor>();
-                Debug.Log("motor left=" + this.motors[(int)MotorType.MotorType_Left]);
-                Debug.Log("motor right=" + this.motors[(int)MotorType.MotorType_Right]);
+                //TODO
             }
-            for (int i = 0; i < this.motors.Length; i++)
-            {
-                if (this.motors[i] != null)
-                {
-                    this.motors[i].Initialize(root);
-                }
-            }
-            this.count = 0;
         }
 
-        public static float motorFowardForceScale = 1.0f;
-        public static float motorRotateForceScale = 10.0f;
         public void DoControl()
         {
-            this.count++;
-            if (this.count < this.update_cycle)
-            {
-                return;
-            }
-            this.count = 0;
-            double target_velocity;
-            double target_rotation_angle_rate;
-
-            target_velocity = this.pdu_reader.GetReadOps().Ref("linear").GetDataFloat64("x") * motorFowardForceScale;
-            target_rotation_angle_rate = this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("z") * motorRotateForceScale;
-
-            //Debug.Log("read target_velocity=" + this.pdu_reader.GetReadOps().Ref("linear").GetDataFloat64("x"));
-            //Debug.Log("target_rotation_angle_rate=" + target_rotation_angle_rate);
-            //Debug.Log("target_rotation_angle_rate=" + target_rotation_angle_rate);
-
-            if (this.motors[(int)MotorType.MotorType_Right] != null)
-            {
-                motors[(int)MotorType.MotorType_Right].SetTargetVelicty((float)(target_velocity + (steering_sensitivity * target_rotation_angle_rate * motor_interval_distance / 2)));
-            }
-            if (this.motors[(int)MotorType.MotorType_Left] != null)
-            {
-                //Debug.Log("target_velocity=" + target_velocity);
-                motors[(int)MotorType.MotorType_Left].SetTargetVelicty((float)(target_velocity - (steering_sensitivity * target_rotation_angle_rate * motor_interval_distance / 2)));
-            }
+            //TODO
         }
         public IoMethod io_method = IoMethod.RPC;
         public CommMethod comm_method = CommMethod.UDP;
