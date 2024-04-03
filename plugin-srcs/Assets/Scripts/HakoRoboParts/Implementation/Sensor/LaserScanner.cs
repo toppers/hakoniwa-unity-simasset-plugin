@@ -20,7 +20,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 
         private Quaternion init_angle;
         public static bool is_debug = true;
-        private float contact_distance = 350f; /* cm */
+        private float contact_distance = 20f; /* m */
         public void Initialize(System.Object obj)
         {
             GameObject tmp = null;
@@ -71,10 +71,10 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         public int max_count = 360;
         private float[] distances;
         private float angle_min = 0.0f;
-        private float angle_max = 6.26573181152f; //?? 6.265 rad = 359??
-        private float range_min = 0.119999997318f; //?? 12cm
-        private float range_max = 3.5f; //?? 3.5m
-        private float angle_increment = 0.0174532923847f; //?? 0.01745 rad = 1??
+        private float angle_max = 6.26573181152f;
+        private float range_min = 0.119999997318f;
+        private float range_max = 3.5f;
+        private float angle_increment = 0.0174532923847f;
         private float time_increment = 2.98800005112e-05f;
         private float scan_time = 0.0f;
         private float[] intensities = new float[0];
@@ -100,9 +100,9 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             this.sensor.transform.localRotation = this.init_angle;
             for (int i = 0; i < max_count; i++)
             {
-                distances[max_count - i - 1] = (GetSensorValue(i) * this.scale) / 100.0f;
+                distances[max_count - i - 1] = (GetSensorValue(i) * this.scale) * 100.0f;
                 this.sensor.transform.Rotate(0, 1, 0);
-                //Debug.Log("angle=" + this.sensor.transform.localEulerAngles.y);
+                //Debug.Log("v[" + (max_count - i - 1) + "]=" + distances[max_count - i - 1]);
             }
         }
         public int view_interval = 5;
