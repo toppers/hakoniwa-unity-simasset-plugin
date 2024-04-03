@@ -3,6 +3,7 @@
 
 import hakopy
 import hako_pdu
+import infra_sensor
 import robot_pdu_info as pdu_info
 import sys
 from enum import Enum
@@ -30,6 +31,7 @@ class RobotController:
         self.pdu_motor = pdu_manager.get_pdu('RobotReal', pdu_info.PDU_MOTOR_CHANNEL_ID)
         self.d_motor = self.pdu_motor.get()
         self.d_baggage = self.pdu_baggage.get()
+        self.infra = infra_sensor.InfraSensor(pdu_manager)
 
     def event(self, event: RobotEvent):
         if (self.status == RobotStatus.INIT):
@@ -78,6 +80,7 @@ class RobotController:
         self.d_motor['linear']['x'] = 0
 
     def run(self):
+        self.infra.run()
         self.do_read()
 
         if (self.status == RobotStatus.INIT):
@@ -98,6 +101,7 @@ def my_on_reset(context):
 def my_on_simulation_step(context):
     global robot_controller
     robot_controller.run()
+
     return 0
 
 my_callback = {

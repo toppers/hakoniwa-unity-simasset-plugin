@@ -1,145 +1,66 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import hakopy
-import hako_pdu
-import pdu_info
-import sys
-from enum import Enum
+import infra_pdu_info as pdu_info
+from math import cos, sin, radians
+import numpy as np
+from numpy.linalg import lstsq
 
-pdu_manager = None
-robot_controller = None
-
-class RobotStatus(Enum):
-    INIT = 1
-    MOVE = 2
-    STOP = 3
-
-class RobotEvent(Enum):
-    MOVE = 1
-    STOP = 2
-
-
-class RobotController:
-    def __init__(self):
-        global pdu_manager
-        self.attached_duration_time_usec = 0
-        self.attached_start_time_usec = 0
-        self.status = RobotStatus.INIT
-        self.pdu_distance = pdu_manager.get_pdu('RobotReal', pdu_info.PDU_ULTRASONIC_CHANNEL_ID)
-        self.pdu_baggage = pdu_manager.get_pdu('RobotReal', pdu_info.PDU_BAGGAGE_CHANNEL_ID)
-        self.pdu_motor = pdu_manager.get_pdu('RobotReal', pdu_info.PDU_MOTOR_CHANNEL_ID)
-        self.d_motor = self.pdu_motor.get()
-        self.d_distance = self.pdu_distance.get()
-        self.d_baggage = self.pdu_baggage.get()
-
-    def event(self, event: RobotEvent):
-        if (self.status == RobotStatus.INIT):
-            if (event == RobotEvent.MOVE):
-                print("INFO: EVENT DO MOVE")
-                self.status = RobotStatus.MOVE
-        elif (self.status == RobotStatus.MOVE):
-            if (event == RobotEvent.STOP):
-                print("INFO: EVENT DO STOP")
-                self.status = RobotStatus.STOP
-
-    def do_read(self):
-        self.d_distance = self.pdu_distance.read()
-        self.d_baggage = self.pdu_baggage.read()
+class InfraSensor:
+    def __init__(self, mgr):
+        self.max = 2000.0
+        self.offset = 100.0
+        self.offset_x = 6
+        self.base_degree = 179
+        self.pdu_manager = mgr
+        self.pdu_sensor = self.pdu_manager.get_pdu(pdu_info.SENSOR_NAME, pdu_info.PDU_SCAN_CHANNEL_ID)
     
-    def do_write(self):
-        #print("motor: ", self.pdu_motor.get()['linear']['x'])
-        self.pdu_motor.write()
+    def analyze(self, degrees, values):
+        x = np.array(degrees)
+        z = np.array(values)
+        A = np.vstack([x**2, x, np.ones(len(x))]).T
+        coefficients, _, _, _ = lstsq(A, z, rcond=None)
+        a, b, c = coefficients
+        x_vertex = -b / (2 * a)
+        z_vertex = a * x_vertex**2 + b * x_vertex + c
 
-    def run_init(self):
-        #motor
-        self.d_motor['linear']['x'] = 0
-        self.d_motor['linear']['y'] = 0
-        self.d_motor['linear']['z'] = 0
-        #touch sensor
-        is_pressed = self.d_baggage['data']
-        if is_pressed:
-            if self.attached_start_time_usec > 0:
-                self.attached_duration_time_usec = hakopy.simulation_time() - self.attached_start_time_usec
-            else:
-                self.attached_start_time_usec = hakopy.simulation_time()
-        else:
-            self.attached_start_time_usec = 0
-            self.attached_duration_time_usec = 0
+        radian_degree = radians(x_vertex - self.base_degree)
+        value = z_vertex + self.offset
+        x = value * cos(radian_degree) - self.offset_x
+        z = value * sin(radian_degree)
+        #print(f"(deg, value): ({x_vertex }, {z_vertex})")
+        return x, z
 
-        # 3sec
-        if self.attached_duration_time_usec >= 3000000:
-            self.event(RobotEvent.MOVE)
-
-    def run_move(self):
-        #motor
-        self.d_motor['linear']['x'] = 0.5
-
-        distance = (float)(self.d_distance['forward_r'] + self.d_distance['forward_l']) /2.0
-        #print("distance: ", distance)
-        if distance <= 250:
-            self.event(RobotEvent.STOP)
-
-    def run_stop(self):
-        #motor
-        #distance = (float)(self.d_distance['forward_r'] + self.d_distance['forward_l']) /2.0
-        #print("distance: ", distance)
-        self.d_motor['linear']['x'] = 0
+    def analyze_min(self):
+        value = self.min_value + self.offset
+        radian_degree = radians(self.min_deg - self.base_degree)
+        x = value * cos(radian_degree)
+        z = value * sin(radian_degree)
+        return x, z
 
     def run(self):
-        self.do_read()
+        degrees = []
+        values = []
 
-        if (self.status == RobotStatus.INIT):
-            self.run_init()
-        elif (self.status == RobotStatus.MOVE):
-            self.run_move()
-        elif (self.status == RobotStatus.STOP):
-            self.run_stop()
+        self.d_sensor = self.pdu_sensor.read()
+        self.sensor_values = set()
+        i = 0
+        self.min_deg = 0
+        self.min_value = 10000
+        while i < 360:
+            if self.d_sensor['ranges'][i] != 2000:
+                degrees.append(i)
+                values.append(self.d_sensor['ranges'][i])
+                if self.min_value > self.d_sensor['ranges'][i]:
+                    self.min_value = self.d_sensor['ranges'][i]
+                    self.min_deg = i
+                self.sensor_values.add((i, self.d_sensor['ranges'][i]))
+            i = i + 1
         
-        self.do_write()
+        if len(self.sensor_values) > 0:
+            x, z = self.analyze(degrees, values)
+            print(f"analyized (x, z): ({x }, {z})")
 
-def my_on_initialize(context):
-    return 0
+            x, z = self.analyze_min()
+            print(f"minimum   (x, z): ({x }, {z})")
 
-def my_on_reset(context):
-    return 0
-
-def my_on_simulation_step(context):
-    global robot_controller
-    robot_controller.run()
-    return 0
-
-my_callback = {
-    'on_initialize': my_on_initialize,
-    'on_simulation_step': my_on_simulation_step,
-    'on_manual_timing_control': None,
-    'on_reset': my_on_reset
-}
-def main():
-    global pdu_manager
-    global robot_controller
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <config_path>")
-        return 1
-
-    asset_name = 'InfraSensor'
-    config_path = sys.argv[1]
-    delta_time_usec = 20000
-
-    pdu_manager = hako_pdu.HakoPduManager('/usr/local/lib/hakoniwa/hako_binary/offset', config_path)
-    hakopy.conductor_start(delta_time_usec, delta_time_usec)
-
-    robot_controller = RobotController()
-
-    ret = hakopy.asset_register(asset_name, config_path, my_callback, delta_time_usec, hakopy.HAKO_ASSET_MODEL_CONTROLLER)
-    if ret == False:
-        print(f"ERROR: hako_asset_register() returns {ret}.")
-        return 1
-
-    ret = hakopy.start()
-
-    hakopy.conductor_stop()
-    return 0
-
-if __name__ == "__main__":
-    sys.exit(main())
