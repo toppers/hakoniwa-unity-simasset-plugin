@@ -27,8 +27,9 @@ class RobotController:
         self.attached_duration_time_usec = 0
         self.attached_start_time_usec = 0
         self.status = RobotStatus.INIT
-        self.pdu_baggage = pdu_manager.get_pdu('RobotReal', pdu_info.PDU_BAGGAGE_CHANNEL_ID)
-        self.pdu_motor = pdu_manager.get_pdu('RobotReal', pdu_info.PDU_MOTOR_CHANNEL_ID)
+        self.pdu_baggage = pdu_manager.get_pdu(pdu_info.AVATAR_NAME, pdu_info.PDU_BAGGAGE_CHANNEL_ID)
+        self.pdu_motor = pdu_manager.get_pdu(pdu_info.MY_ROBOT_NAME, pdu_info.PDU_MOTOR_CHANNEL_ID)
+        self.pdu_pos = pdu_manager.get_pdu(pdu_info.AVATAR_NAME, pdu_info.PDU_POS_CHANNEL_ID)
         self.d_motor = self.pdu_motor.get()
         self.d_baggage = self.pdu_baggage.get()
         self.infra = infra_sensor.InfraSensor(pdu_manager)
@@ -45,6 +46,7 @@ class RobotController:
 
     def do_read(self):
         self.d_baggage = self.pdu_baggage.read()
+        self.d_pos = self.pdu_pos.read()
     
     def do_write(self):
         #print("motor: ", self.pdu_motor.get()['linear']['x'])
@@ -72,8 +74,12 @@ class RobotController:
 
     def run_move(self):
         #motor
-        self.d_motor['linear']['x'] = 0.5
-
+        pos_y = self.d_pos['linear']['y']
+        #print("pos_y: ", pos_y)
+        if pos_y >= 5.5:
+            self.d_motor['linear']['x'] = 0.0
+        else:
+            self.d_motor['linear']['x'] = 0.1
 
     def run_stop(self):
         #motor
