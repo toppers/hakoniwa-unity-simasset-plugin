@@ -120,16 +120,22 @@ my_callback = {
 def main():
     global pdu_manager
     global robot_controller
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <config_path>")
+    if len(sys.argv) != 2 and len(sys.argv) != 3:
+        print(f"Usage: {sys.argv[0]} <config_path> [asset_only]")
         return 1
+    
+    enable_master = True
+    if len(sys.argv) == 3:
+        enable_master = False
 
     asset_name = 'RobotController'
     config_path = sys.argv[1]
     delta_time_usec = 20000
 
     pdu_manager = hako_pdu.HakoPduManager('/usr/local/lib/hakoniwa/hako_binary/offset', config_path)
-    hakopy.conductor_start(delta_time_usec, delta_time_usec)
+
+    if enable_master:
+        hakopy.conductor_start(delta_time_usec, delta_time_usec)
 
     robot_controller = RobotController()
 
@@ -140,7 +146,9 @@ def main():
 
     ret = hakopy.start()
 
-    hakopy.conductor_stop()
+    if enable_master:
+        hakopy.conductor_stop()
+
     return 0
 
 if __name__ == "__main__":

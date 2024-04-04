@@ -54,7 +54,7 @@ class InfraSensor:
         self.d_pos['angular']['y'] = 0
         self.d_pos['angular']['z'] = 0
         #print(f"(ax, ay): ({self.analyzed_x }, {self.analyzed_y })")
-        print(f"( x,  y): ({self.d_pos['linear']['x'] }, {self.d_pos['linear']['y'] })")
+        #print(f"( x,  y): ({self.d_pos['linear']['x'] }, {self.d_pos['linear']['y'] })")
         self.pdu_pos.write()
 
     def run(self):
