@@ -337,7 +337,7 @@ GameObject:
   - component: {fileID: 395681307}
   - component: {fileID: 395681306}
   m_Layer: 0
-  m_Name: MovableSpace
+  m_Name: Stop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -401,12 +401,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 395681304}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0.721, y: -0.32000005, z: -0.35}
-  m_LocalScale: {x: 1, y: 1, z: 0.01}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -11.15, y: -0.702, z: -3.5}
+  m_LocalScale: {x: 10, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1666964262}
+  m_Father: {fileID: 769641185}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &408539485
 GameObject:
@@ -572,6 +572,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1538210795}
+  - {fileID: 395681308}
   - {fileID: 1666964262}
   - {fileID: 705507995}
   - {fileID: 92702779}
@@ -587,7 +588,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1735180288928681903, guid: 6a96b53b10e8847ecae4a80aad939729, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 1735180288928681903, guid: 6a96b53b10e8847ecae4a80aad939729, type: 3}
       propertyPath: m_LocalPosition.y
@@ -759,6 +760,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: RobotAvator
       objectReference: {fileID: 0}
+    - target: {fileID: 8076357145743266395, guid: 2b18e506b6c9a479ea93c0219da9e58c, type: 3}
+      propertyPath: enableLerp
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8853157118752411431, guid: 2b18e506b6c9a479ea93c0219da9e58c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -912,8 +917,7 @@ Transform:
   m_LocalPosition: {x: 0.258219, y: -0.67, z: 0}
   m_LocalScale: {x: 10, y: 0.1, z: 10}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 395681308}
+  m_Children: []
   m_Father: {fileID: 769641185}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2049217763
@@ -978,7 +982,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9174929037193395640, guid: 6fc7c173929214b04b56c206e00365f8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 9174929037193395640, guid: 6fc7c173929214b04b56c206e00365f8, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1034,9 +1038,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2049217764}
     m_Modifications:
+    - target: {fileID: 1439319830032188090, guid: 4a80ad71db64749f1aadf590cf7aecf1, type: 3}
+      propertyPath: update_cycle
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1439319830032188090, guid: 4a80ad71db64749f1aadf590cf7aecf1, type: 3}
+      propertyPath: contact_distance
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 7052914146702138520, guid: 4a80ad71db64749f1aadf590cf7aecf1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -10
+      value: -13
       objectReference: {fileID: 0}
     - target: {fileID: 7052914146702138520, guid: 4a80ad71db64749f1aadf590cf7aecf1, type: 3}
       propertyPath: m_LocalPosition.y

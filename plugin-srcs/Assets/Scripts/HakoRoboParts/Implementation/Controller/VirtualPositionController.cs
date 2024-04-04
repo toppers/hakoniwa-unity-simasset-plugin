@@ -21,7 +21,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         public string[] topic_name = {
             "cmd_pos"
         };
-
+        public bool enableLerp = false;
         public void Initialize(object obj)
         {
             GameObject tmp = null;
@@ -73,12 +73,18 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 
             //Debug.Log("pos: " + pos);
             //Debug.Log("euler: " + euler);
-            //this.rd.MovePosition(pos); // can not move smothly and baggage is dropped down..
-            Vector3 startPosition = this.rd.position;
-            Vector3 endPosition = pos;
-            float speed = 1.0f;
-            float step = speed * Time.deltaTime;
-            this.rd.MovePosition(Vector3.Lerp(startPosition, endPosition, step));
+            if (enableLerp)
+            {
+                Vector3 startPosition = this.rd.position;
+                Vector3 endPosition = pos;
+                float speed = 1.0f;
+                float step = speed * Time.deltaTime;
+                this.rd.MovePosition(Vector3.Lerp(startPosition, endPosition, step));
+            }
+            else
+            {
+                this.rd.MovePosition(pos); // can not move smothly and baggage is dropped down..
+            }
 
         }
         public RosTopicMessageConfig[] getRosConfig()

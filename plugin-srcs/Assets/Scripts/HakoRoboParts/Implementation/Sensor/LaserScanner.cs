@@ -20,7 +20,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 
         private Quaternion init_angle;
         public static bool is_debug = true;
-        private float contact_distance = 20f; /* m */
+        public float contact_distance = 10f; /* m */
         public void Initialize(System.Object obj)
         {
             GameObject tmp = null;
