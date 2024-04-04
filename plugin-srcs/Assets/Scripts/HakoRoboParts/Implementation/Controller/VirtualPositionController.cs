@@ -13,6 +13,8 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         private string root_name;
         private PduIoConnector pdu_io;
         private IPduReader pdu_reader;
+        private float base_rotation_y;
+        private Rigidbody rd; // need rigidbody for trasporting baggage..
         public string[] topic_type = {
             "geometry_msgs/Twist"
         };
@@ -42,11 +44,17 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 {
                     throw new ArgumentException("can not found pdu_io:" + root_name);
                 }
+                this.base_rotation_y = this.root.transform.eulerAngles.y;
                 var pdu_reader_name = root_name + "_" + this.topic_name[0] + "Pdu";
                 this.pdu_reader = this.pdu_io.GetReader(pdu_reader_name);
                 if (this.pdu_reader == null)
                 {
                     throw new ArgumentException("can not found pdu_writer:" + pdu_reader_name);
+                }
+                this.rd = this.root.GetComponentInChildren<Rigidbody>();
+                if (this.rd == null)
+                {
+                    throw new ArgumentException("Can not find Rigidbody on " + root_name);
                 }
             }
         }
@@ -60,13 +68,17 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             pos.z = (float)this.pdu_reader.GetReadOps().Ref("linear").GetDataFloat64("x");
 
             euler.x = -(float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("y");
-            euler.y = (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("z");
+            euler.y = (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("z") + this.base_rotation_y;
             euler.z = (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("x");
 
             //Debug.Log("pos: " + pos);
             //Debug.Log("euler: " + euler);
-            this.root.transform.position = pos;
-            this.root.transform.rotation = Quaternion.Euler(euler);
+            //this.rd.MovePosition(pos); // can not move smothly and baggage is dropped down..
+            Vector3 startPosition = this.rd.position;
+            Vector3 endPosition = pos;
+            float speed = 1.0f;
+            float step = speed * Time.deltaTime;
+            this.rd.MovePosition(Vector3.Lerp(startPosition, endPosition, step));
 
         }
         public RosTopicMessageConfig[] getRosConfig()
