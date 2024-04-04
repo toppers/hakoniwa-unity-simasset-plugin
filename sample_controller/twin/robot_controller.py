@@ -24,6 +24,7 @@ class RobotEvent(Enum):
 class RobotController:
     def __init__(self):
         global pdu_manager
+        self.target_stop_pos_y = 9.8
         self.attached_duration_time_usec = 0
         self.attached_start_time_usec = 0
         self.status = RobotStatus.INIT
@@ -76,7 +77,7 @@ class RobotController:
         #motor
         pos_y = self.d_pos['linear']['y']
         #print("pos_y: ", pos_y)
-        if pos_y >= 5.5:
+        if pos_y >= self.target_stop_pos_y:
             self.d_motor['linear']['x'] = 0.0
         else:
             self.d_motor['linear']['x'] = 0.1
