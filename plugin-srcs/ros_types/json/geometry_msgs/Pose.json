@@ -1,12 +1,12 @@
 {
   "fields": [
     {
-      "type": "Point", 
-      "name": "position"
-    }, 
+      "name": "position",
+      "type": "Point"
+    },
     {
-      "type": "Quaternion", 
-      "name": "orientation"
+      "name": "orientation",
+      "type": "Quaternion"
     }
   ]
 }

@@ -2,7 +2,7 @@
   "fields": [
     {
       "name": "data",
-      "type": "bool"
+      "type": "uint8[8]"
     }
   ]
 }

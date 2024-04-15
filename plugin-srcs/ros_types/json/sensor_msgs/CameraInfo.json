@@ -1,48 +1,48 @@
 {
   "fields": [
     {
-      "type": "std_msgs/Header", 
-      "name": "header"
-    }, 
+      "name": "header",
+      "type": "std_msgs/Header"
+    },
     {
-      "type": "uint32", 
-      "name": "height"
-    }, 
+      "name": "height",
+      "type": "uint32"
+    },
     {
-      "type": "uint32", 
-      "name": "width"
-    }, 
+      "name": "width",
+      "type": "uint32"
+    },
     {
-      "type": "string", 
-      "name": "distortion_model"
-    }, 
+      "name": "distortion_model",
+      "type": "string"
+    },
     {
-      "type": "float64[]", 
-      "name": "d"
-    }, 
+      "name": "d",
+      "type": "float64[]"
+    },
     {
-      "type": "float64[9]", 
-      "name": "k"
-    }, 
+      "name": "k",
+      "type": "float64[9]"
+    },
     {
-      "type": "float64[9]", 
-      "name": "r"
-    }, 
+      "name": "r",
+      "type": "float64[9]"
+    },
     {
-      "type": "float64[12]", 
-      "name": "p"
-    }, 
+      "name": "p",
+      "type": "float64[12]"
+    },
     {
-      "type": "uint32", 
-      "name": "binning_x"
-    }, 
+      "name": "binning_x",
+      "type": "uint32"
+    },
     {
-      "type": "uint32", 
-      "name": "binning_y"
-    }, 
+      "name": "binning_y",
+      "type": "uint32"
+    },
     {
-      "type": "RegionOfInterest", 
-      "name": "roi"
+      "name": "roi",
+      "type": "RegionOfInterest"
     }
   ]
 }

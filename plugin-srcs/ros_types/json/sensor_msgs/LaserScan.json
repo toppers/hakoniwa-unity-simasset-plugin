@@ -1,44 +1,44 @@
 {
   "fields": [
     {
-      "type": "std_msgs/Header", 
-      "name": "header"
-    }, 
+      "name": "header",
+      "type": "std_msgs/Header"
+    },
     {
-      "type": "float32", 
-      "name": "angle_min"
-    }, 
+      "name": "angle_min",
+      "type": "float32"
+    },
     {
-      "type": "float32", 
-      "name": "angle_max"
-    }, 
+      "name": "angle_max",
+      "type": "float32"
+    },
     {
-      "type": "float32", 
-      "name": "angle_increment"
-    }, 
+      "name": "angle_increment",
+      "type": "float32"
+    },
     {
-      "type": "float32", 
-      "name": "time_increment"
-    }, 
+      "name": "time_increment",
+      "type": "float32"
+    },
     {
-      "type": "float32", 
-      "name": "scan_time"
-    }, 
+      "name": "scan_time",
+      "type": "float32"
+    },
     {
-      "type": "float32", 
-      "name": "range_min"
-    }, 
+      "name": "range_min",
+      "type": "float32"
+    },
     {
-      "type": "float32", 
-      "name": "range_max"
-    }, 
+      "name": "range_max",
+      "type": "float32"
+    },
     {
-      "type": "float32[]", 
-      "name": "ranges"
-    }, 
+      "name": "ranges",
+      "type": "float32[]"
+    },
     {
-      "type": "float32[]", 
-      "name": "intensities"
+      "name": "intensities",
+      "type": "float32[]"
     }
   ]
 }

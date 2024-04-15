@@ -1,12 +1,12 @@
 {
   "fields": [
     {
-      "type": "Pose", 
-      "name": "pose"
-    }, 
+      "name": "pose",
+      "type": "Pose"
+    },
     {
-      "type": "float64[36]", 
-      "name": "covariance"
+      "name": "covariance",
+      "type": "float64[36]"
     }
   ]
 }

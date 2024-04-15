@@ -1,12 +1,12 @@
 {
   "fields": [
     {
-      "type": "Vector3", 
-      "name": "linear"
-    }, 
+      "name": "linear",
+      "type": "Vector3"
+    },
     {
-      "type": "Vector3", 
-      "name": "angular"
+      "name": "angular",
+      "type": "Vector3"
     }
   ]
 }

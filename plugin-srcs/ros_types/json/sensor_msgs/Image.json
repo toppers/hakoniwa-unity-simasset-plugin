@@ -1,32 +1,32 @@
 {
   "fields": [
     {
-      "type": "std_msgs/Header", 
-      "name": "header"
-    }, 
+      "name": "header",
+      "type": "std_msgs/Header"
+    },
     {
-      "type": "uint32", 
-      "name": "height"
-    }, 
+      "name": "height",
+      "type": "uint32"
+    },
     {
-      "type": "uint32", 
-      "name": "width"
-    }, 
+      "name": "width",
+      "type": "uint32"
+    },
     {
-      "type": "string", 
-      "name": "encoding"
-    }, 
+      "name": "encoding",
+      "type": "string"
+    },
     {
-      "type": "uint8", 
-      "name": "is_bigendian"
-    }, 
+      "name": "is_bigendian",
+      "type": "uint8"
+    },
     {
-      "type": "uint32", 
-      "name": "step"
-    }, 
+      "name": "step",
+      "type": "uint32"
+    },
     {
-      "type": "uint8[]", 
-      "name": "data"
+      "name": "data",
+      "type": "uint8[]"
     }
   ]
 }

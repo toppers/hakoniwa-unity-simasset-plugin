@@ -1,16 +1,16 @@
 {
   "fields": [
     {
-      "type": "std_msgs/Header", 
-      "name": "header"
-    }, 
+      "name": "header",
+      "type": "std_msgs/Header"
+    },
     {
-      "type": "string", 
-      "name": "child_frame_id"
-    }, 
+      "name": "child_frame_id",
+      "type": "string"
+    },
     {
-      "type": "Transform", 
-      "name": "transform"
+      "name": "transform",
+      "type": "Transform"
     }
   ]
 }

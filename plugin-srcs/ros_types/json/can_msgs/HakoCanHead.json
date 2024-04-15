@@ -1,24 +1,24 @@
 {
   "fields": [
     {
-      "name": "x_offset",
+      "name": "channel",
       "type": "uint32"
     },
     {
-      "name": "y_offset",
+      "name": "ide",
       "type": "uint32"
     },
     {
-      "name": "height",
+      "name": "rtr",
       "type": "uint32"
     },
     {
-      "name": "width",
+      "name": "dlc",
       "type": "uint32"
     },
     {
-      "name": "do_rectify",
-      "type": "bool"
+      "name": "canid",
+      "type": "uint32"
     }
   ]
 }

@@ -1,40 +1,40 @@
 {
   "fields": [
     {
-      "type": "std_msgs/Header", 
-      "name": "header"
-    }, 
+      "name": "header",
+      "type": "std_msgs/Header"
+    },
     {
-      "type": "uint32", 
-      "name": "height"
-    }, 
+      "name": "height",
+      "type": "uint32"
+    },
     {
-      "type": "uint32", 
-      "name": "width"
-    }, 
+      "name": "width",
+      "type": "uint32"
+    },
     {
-      "type": "PointField[]", 
-      "name": "fields"
-    }, 
+      "name": "fields",
+      "type": "PointField[]"
+    },
     {
-      "type": "bool", 
-      "name": "is_bigendian"
-    }, 
+      "name": "is_bigendian",
+      "type": "bool"
+    },
     {
-      "type": "uint32", 
-      "name": "point_step"
-    }, 
+      "name": "point_step",
+      "type": "uint32"
+    },
     {
-      "type": "uint32", 
-      "name": "row_step"
-    }, 
+      "name": "row_step",
+      "type": "uint32"
+    },
     {
-      "type": "uint8[]", 
-      "name": "data"
-    }, 
+      "name": "data",
+      "type": "uint8[]"
+    },
     {
-      "type": "bool", 
-      "name": "is_dense"
+      "name": "is_dense",
+      "type": "bool"
     }
   ]
 }

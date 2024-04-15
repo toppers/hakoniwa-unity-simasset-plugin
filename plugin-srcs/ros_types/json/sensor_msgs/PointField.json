@@ -1,52 +1,20 @@
 {
   "fields": [
     {
-      "type": "uint8", 
-      "name": "INT8"
-    }, 
+      "name": "name",
+      "type": "string"
+    },
     {
-      "type": "uint8", 
-      "name": "UINT8"
-    }, 
+      "name": "offset",
+      "type": "uint32"
+    },
     {
-      "type": "uint8", 
-      "name": "INT16"
-    }, 
+      "name": "datatype",
+      "type": "uint8"
+    },
     {
-      "type": "uint8", 
-      "name": "UINT16"
-    }, 
-    {
-      "type": "uint8", 
-      "name": "INT32"
-    }, 
-    {
-      "type": "uint8", 
-      "name": "UINT32"
-    }, 
-    {
-      "type": "uint8", 
-      "name": "FLOAT32"
-    }, 
-    {
-      "type": "uint8", 
-      "name": "FLOAT64"
-    }, 
-    {
-      "type": "string", 
-      "name": "name"
-    }, 
-    {
-      "type": "uint32", 
-      "name": "offset"
-    }, 
-    {
-      "type": "uint8", 
-      "name": "datatype"
-    }, 
-    {
-      "type": "uint32", 
-      "name": "count"
+      "name": "count",
+      "type": "uint32"
     }
   ]
 }

@@ -1,12 +1,12 @@
 {
   "fields": [
     {
-      "type": "int32", 
-      "name": "sec"
-    }, 
+      "name": "sec",
+      "type": "int32"
+    },
     {
-      "type": "uint32", 
-      "name": "nanosec"
+      "name": "nanosec",
+      "type": "uint32"
     }
   ]
 }

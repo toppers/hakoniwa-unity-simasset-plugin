@@ -1,32 +1,32 @@
 {
   "fields": [
     {
-      "type": "std_msgs/Header", 
-      "name": "header"
-    }, 
+      "name": "header",
+      "type": "std_msgs/Header"
+    },
     {
-      "type": "geometry_msgs/Quaternion", 
-      "name": "orientation"
-    }, 
+      "name": "orientation",
+      "type": "geometry_msgs/Quaternion"
+    },
     {
-      "type": "float64[9]", 
-      "name": "orientation_covariance"
-    }, 
+      "name": "orientation_covariance",
+      "type": "float64[9]"
+    },
     {
-      "type": "geometry_msgs/Vector3", 
-      "name": "angular_velocity"
-    }, 
+      "name": "angular_velocity",
+      "type": "geometry_msgs/Vector3"
+    },
     {
-      "type": "float64[9]", 
-      "name": "angular_velocity_covariance"
-    }, 
+      "name": "angular_velocity_covariance",
+      "type": "float64[9]"
+    },
     {
-      "type": "geometry_msgs/Vector3", 
-      "name": "linear_acceleration"
-    }, 
+      "name": "linear_acceleration",
+      "type": "geometry_msgs/Vector3"
+    },
     {
-      "type": "float64[9]", 
-      "name": "linear_acceleration_covariance"
+      "name": "linear_acceleration_covariance",
+      "type": "float64[9]"
     }
   ]
 }

@@ -1,8 +1,8 @@
 {
   "fields": [
     {
-      "type": "uint32", 
-      "name": "value"
+      "name": "value",
+      "type": "uint32"
     }
   ]
 }

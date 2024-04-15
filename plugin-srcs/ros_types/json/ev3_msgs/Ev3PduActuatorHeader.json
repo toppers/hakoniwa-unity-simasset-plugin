@@ -1,24 +1,24 @@
 {
   "fields": [
     {
-      "type": "string", 
-      "name": "name"
-    }, 
+      "name": "name",
+      "type": "string"
+    },
     {
-      "type": "uint32", 
-      "name": "version"
-    }, 
+      "name": "version",
+      "type": "uint32"
+    },
     {
-      "type": "int64", 
-      "name": "asset_time"
-    }, 
+      "name": "asset_time",
+      "type": "int64"
+    },
     {
-      "type": "uint32", 
-      "name": "ext_off"
-    }, 
+      "name": "ext_off",
+      "type": "uint32"
+    },
     {
-      "type": "uint32", 
-      "name": "ext_size"
+      "name": "ext_size",
+      "type": "uint32"
     }
   ]
 }

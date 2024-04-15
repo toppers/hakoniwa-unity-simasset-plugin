@@ -1,44 +1,44 @@
 {
   "fields": [
     {
-      "type": "Ev3PduSensorHeader", 
-      "name": "head"
-    }, 
+      "name": "head",
+      "type": "Ev3PduSensorHeader"
+    },
     {
-      "type": "uint8[1]", 
-      "name": "buttons"
-    }, 
+      "name": "buttons",
+      "type": "uint8[1]"
+    },
     {
-      "type": "Ev3PduColorSensor[2]", 
-      "name": "color_sensors"
-    }, 
+      "name": "color_sensors",
+      "type": "Ev3PduColorSensor[2]"
+    },
     {
-      "type": "Ev3PduTouchSensor[2]", 
-      "name": "touch_sensors"
-    }, 
+      "name": "touch_sensors",
+      "type": "Ev3PduTouchSensor[2]"
+    },
     {
-      "type": "uint32[3]", 
-      "name": "motor_angle"
-    }, 
+      "name": "motor_angle",
+      "type": "uint32[3]"
+    },
     {
-      "type": "int32", 
-      "name": "gyro_degree"
-    }, 
+      "name": "gyro_degree",
+      "type": "int32"
+    },
     {
-      "type": "int32", 
-      "name": "gyro_degree_rate"
-    }, 
+      "name": "gyro_degree_rate",
+      "type": "int32"
+    },
     {
-      "type": "uint32", 
-      "name": "sensor_ultrasonic"
-    }, 
+      "name": "sensor_ultrasonic",
+      "type": "uint32"
+    },
     {
-      "type": "float64", 
-      "name": "gps_lat"
-    }, 
+      "name": "gps_lat",
+      "type": "float64"
+    },
     {
-      "type": "float64", 
-      "name": "gps_lon"
+      "name": "gps_lon",
+      "type": "float64"
     }
   ]
 }

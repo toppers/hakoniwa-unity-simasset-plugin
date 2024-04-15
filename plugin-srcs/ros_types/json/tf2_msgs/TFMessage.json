@@ -1,8 +1,8 @@
 {
   "fields": [
     {
-      "type": "geometry_msgs/TransformStamped[]", 
-      "name": "transforms"
+      "name": "transforms",
+      "type": "geometry_msgs/TransformStamped[]"
     }
   ]
 }
