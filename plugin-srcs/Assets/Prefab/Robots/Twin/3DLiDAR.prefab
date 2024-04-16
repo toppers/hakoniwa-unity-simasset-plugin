@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 7052914146702138520}
   - component: {fileID: 4378757352911054408}
   - component: {fileID: 505008871029185600}
-  - component: {fileID: 6692741799631638722}
+  - component: {fileID: 6811431405568904601}
   m_Layer: 0
   m_Name: 3DLiDAR
   m_TagString: HakoAssetRoot
@@ -198,7 +198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   on: 1
---- !u!114 &6692741799631638722
+--- !u!114 &6811431405568904601
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -220,8 +220,12 @@ MonoBehaviour:
   height: 61
   width: 181
   view_interval: 5
-  topic_type: sensor_msgs/PointCloud2
-  topic_name: lidar_points
+  topic_type:
+  - sensor_msgs/PointCloud2
+  - geometry_msgs/Twist
+  topic_name:
+  - lidar_points
+  - lidar_pos
   update_cycle: 1
   io_method: 0
   comm_method: 2

@@ -40,7 +40,8 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         private GameObject sensor;
         private string root_name;
         private PduIoConnector pdu_io;
-        private IPduWriter pdu_writer;
+        private IPduWriter pdu_writer_lidar;
+        private IPduWriter pdu_writer_pos;
         public float scale = 1.0f;
 
         private Quaternion init_angle;
@@ -132,7 +133,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             Vector3 direction = rotation * Vector3.forward;
             return direction * distance;
         }
-        public void UpdatePdu(Pdu pdu)
+        public void UpdateLidarPdu(Pdu pdu)
         {
             TimeStamp.Set(pdu);
             pdu.Ref("header").SetData("frame_id", "front_lidar_frame");
@@ -169,9 +170,15 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 {
                     throw new ArgumentException("can not found pdu_io:" + root_name);
                 }
-                var pdu_writer_name = root_name + "_" + this.topic_name + "Pdu";
-                this.pdu_writer = this.pdu_io.GetWriter(pdu_writer_name);
-                if (this.pdu_writer == null)
+                var pdu_writer_name = root_name + "_" + this.topic_name[0] + "Pdu";
+                this.pdu_writer_lidar = this.pdu_io.GetWriter(pdu_writer_name);
+                if (this.pdu_writer_lidar == null)
+                {
+                    throw new ArgumentException("can not found pdu_reader:" + pdu_writer_name);
+                }
+                pdu_writer_name = root_name + "_" + this.topic_name[1] + "Pdu";
+                this.pdu_writer_pos = this.pdu_io.GetWriter(pdu_writer_name);
+                if (this.pdu_writer_pos == null)
                 {
                     throw new ArgumentException("can not found pdu_reader:" + pdu_writer_name);
                 }
@@ -209,35 +216,66 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             }
             this.count = 0;
             this.ScanEnvironment();
-            this.UpdatePdu(this.pdu_writer.GetWriteOps().Ref(null));
+            this.UpdateLidarPdu(this.pdu_writer_lidar.GetWriteOps().Ref(null));
+            this.UpdatePosPdu(this.pdu_writer_pos.GetWriteOps().Ref(null));
             return;
         }
 
-        public string topic_type = "sensor_msgs/PointCloud2";
-        public string topic_name = "lidar_points";
+        private void UpdatePosPdu(Pdu pdu)
+        {
+            //Unity FRAME TO ROS FRAME
+            pdu.Ref("linear").SetData("x", (double)this.sensor.transform.position.z);
+            pdu.Ref("linear").SetData("y", -(double)this.sensor.transform.position.x);
+            pdu.Ref("linear").SetData("z", (double)this.sensor.transform.position.y);
+
+            var euler = this.sensor.transform.transform.eulerAngles;
+
+            pdu.Ref("angular").SetData("x", (double)((MathF.PI/180) * euler.z));
+            pdu.Ref("angular").SetData("y", -(double)((MathF.PI / 180) * euler.x));
+            pdu.Ref("angular").SetData("z", (double)((MathF.PI / 180) * euler.y));
+        }
+
+        public string[] topic_type = {
+            "sensor_msgs/PointCloud2",
+            "geometry_msgs/Twist"
+        };
+        public string[] topic_name = {
+            "lidar_points",
+            "lidar_pos"
+        };
         public int update_cycle = 1;
         private int count = 0;
         public RosTopicMessageConfig[] getRosConfig()
         {
             RosTopicMessageConfig[] cfg = new RosTopicMessageConfig[1];
-            cfg[0] = RoboPartsConfigData.getRosConfigSingle(this.GetRoboPartsConfig()[0], this.topic_name, this.topic_type, this.update_cycle);
-            return cfg;
+            return RoboPartsConfigData.getRosConfig(this.GetRoboPartsConfig(), this.topic_name, this.topic_type, null);
         }
         public IoMethod io_method = IoMethod.SHM;
         public CommMethod comm_method = CommMethod.DIRECT;
         public RoboPartsConfigData[] GetRoboPartsConfig()
         {
-            RoboPartsConfigData[] configs = new RoboPartsConfigData[1];
+            RoboPartsConfigData[] configs = new RoboPartsConfigData[2];
             configs[0] = new RoboPartsConfigData();
             configs[0].io_dir = IoDir.WRITE;
             configs[0].io_method = this.io_method;
-            configs[0].value.org_name = this.topic_name;
-            configs[0].value.type = this.topic_type;
+            configs[0].value.org_name = this.topic_name[0];
+            configs[0].value.type = this.topic_type[0];
             configs[0].value.class_name = ConstantValues.pdu_writer_class;
             configs[0].value.conv_class_name = ConstantValues.conv_pdu_writer_class;
             configs[0].value.pdu_size = 177376;
             configs[0].value.write_cycle = this.update_cycle;
             configs[0].value.method_type = this.comm_method.ToString();
+
+            configs[1] = new RoboPartsConfigData();
+            configs[1].io_dir = IoDir.WRITE;
+            configs[1].io_method = this.io_method;
+            configs[1].value.org_name = this.topic_name[1];
+            configs[1].value.type = this.topic_type[1];
+            configs[1].value.class_name = ConstantValues.pdu_writer_class;
+            configs[1].value.conv_class_name = ConstantValues.conv_pdu_writer_class;
+            configs[1].value.pdu_size = ConstantValues.Twist_pdu_size;
+            configs[1].value.write_cycle = this.update_cycle;
+            configs[1].value.method_type = this.comm_method.ToString();
             return configs;
         }
 
