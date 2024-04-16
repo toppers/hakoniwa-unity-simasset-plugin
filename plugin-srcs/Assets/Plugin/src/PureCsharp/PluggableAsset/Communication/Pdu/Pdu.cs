@@ -184,7 +184,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
                         {
                             elms[i] = new Pdu(array_type);
                         }
-                        SimpleLogger.Get().Log(Level.DEBUG, "STRUCT ARRAY:" + e.name + " type=" + e.type);
+                        SimpleLogger.Get().Log(Level.DEBUG, "STRUCT ARRAY:" + e.name + " type=" + e.type　+ " array_size: " + elms.Length);
                         this.field_struct_array.Add(e.name, elms);
                     }
                 }

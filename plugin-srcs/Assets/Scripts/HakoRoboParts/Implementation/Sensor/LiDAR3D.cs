@@ -69,17 +69,27 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         private Pdu[] pdu_fields;
 
         public float view_interval = 5;
+
         private float GetSensorValue(float degreeYaw, float degreePitch)
         {
-            Quaternion rotation = Quaternion.Euler(0, degreeYaw, degreePitch);
-            Vector3 direction = rotation * this.sensor.transform.forward;
+            // センサーの基本の前方向を取得
+            Vector3 forward = sensor.transform.forward;
+
+            // Quaternionを使用してヨー、ピッチ、ロールを一度に計算
+            Quaternion yawRotation = Quaternion.AngleAxis(degreeYaw, sensor.transform.up);
+            Quaternion pitchRotation = Quaternion.AngleAxis(degreePitch, yawRotation * sensor.transform.right);
+
+            // 最終的な回転を適用
+            Quaternion finalRotation = yawRotation * pitchRotation;
+            Vector3 finalDirection = finalRotation * forward;
+
             RaycastHit hit;
 
-            if (Physics.Raycast(sensor.transform.position, direction, out hit, contact_distance))
+            if (Physics.Raycast(sensor.transform.position, finalDirection, out hit, contact_distance))
             {
                 if (is_debug && (degreeYaw % view_interval) < 0.0001 && (degreePitch % view_interval) < 0.0001)
                 {
-                    Debug.DrawRay(this.sensor.transform.position, direction * hit.distance, Color.red, 0.05f, false);
+                    Debug.DrawRay(sensor.transform.position, finalDirection * hit.distance, Color.red, 0.05f, false);
                 }
                 return hit.distance;
             }
@@ -87,11 +97,13 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             {
                 if (is_debug && (degreeYaw % view_interval) < 0.0001 && (degreePitch % view_interval) < 0.0001)
                 {
-                    Debug.DrawRay(this.sensor.transform.position, direction * contact_distance, Color.green, 0.05f, false);
+                    Debug.DrawRay(sensor.transform.position, finalDirection * contact_distance, Color.green, 0.05f, false);
                 }
                 return contact_distance;
             }
         }
+
+
         private void ScanEnvironment()
         {
             int totalPoints = height * width;
