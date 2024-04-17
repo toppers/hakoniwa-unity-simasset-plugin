@@ -118,20 +118,26 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                     float distance = GetSensorValue(yaw, pitch);
                     Vector3 point = CalculatePoint(distance, yaw, pitch);
 
-                    Buffer.BlockCopy(BitConverter.GetBytes(point.x), 0, data, dataIndex, 4);
-                    Buffer.BlockCopy(BitConverter.GetBytes(point.y), 0, data, dataIndex + 4, 4);
-                    Buffer.BlockCopy(BitConverter.GetBytes(point.z), 0, data, dataIndex + 8, 4);
+                    Buffer.BlockCopy(BitConverter.GetBytes(point.z), 0, data, dataIndex, 4);//x
+                    Buffer.BlockCopy(BitConverter.GetBytes(-point.x), 0, data, dataIndex + 4, 4);//y
+                    Buffer.BlockCopy(BitConverter.GetBytes(point.y), 0, data, dataIndex + 8, 4);//z
                     Buffer.BlockCopy(BitConverter.GetBytes(fixedIntensity), 0, data, dataIndex + 12, 4);
 
                     dataIndex += point_step;
                 }
             }
         }
-        private Vector3 CalculatePoint(float distance, float yaw, float pitch)
+        private Vector3 CalculatePoint(float distance, float degreeYaw, float degreePitch)
         {
-            Quaternion rotation = Quaternion.Euler(pitch, yaw, 0);
-            Vector3 direction = rotation * Vector3.forward;
-            return direction * distance;
+            // ユーラー角を四元数に変換
+            Quaternion rotation = Quaternion.Euler(degreePitch, degreeYaw, 0);
+
+            // ローカル座標系での前方ベクトル
+            Vector3 forwardInLocal = rotation * this.sensor.transform.forward;
+
+            // 衝突点の計算
+            Vector3 collisionPoint = forwardInLocal * distance;
+            return collisionPoint;
         }
         public void UpdateLidarPdu(Pdu pdu)
         {
@@ -190,7 +196,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 
                 if ((this.row_step * this.height) > this.max_data_array_size)
                 {
-                    throw new ArgumentException("ERROR: oveflow data size: " +(this.row_step * this.height) + " max: " + this.max_data_array_size);
+                    throw new ArgumentException("ERROR: oveflow data size: " + (this.row_step * this.height) + " max: " + this.max_data_array_size);
                 }
 
 
@@ -231,7 +237,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 
             var euler = this.sensor.transform.transform.eulerAngles;
 
-            pdu.Ref("angular").SetData("x", (double)((MathF.PI/180) * euler.z));
+            pdu.Ref("angular").SetData("x", (double)((MathF.PI / 180) * euler.z));
             pdu.Ref("angular").SetData("y", -(double)((MathF.PI / 180) * euler.x));
             pdu.Ref("angular").SetData("z", (double)((MathF.PI / 180) * euler.y));
         }
