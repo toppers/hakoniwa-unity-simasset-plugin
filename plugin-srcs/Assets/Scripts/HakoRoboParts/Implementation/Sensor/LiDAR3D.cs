@@ -204,6 +204,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                     this.pdu_fields[i].SetData("datatype", (byte)this.fields[i].datatype);
                     this.pdu_fields[i].SetData("count", (uint)this.fields[i].count);
                 }
+                this.pdu_writer_lidar.GetWriteOps().SetData("fields", this.pdu_fields);
             }
         }
 
