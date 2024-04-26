@@ -9,6 +9,9 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 {
     public class MagnetHolder : MonoBehaviour, IRobotPartsController, IRobotPartsSensor, IRobotPartsConfig
     {
+        public string game_ops_name = "hako_cmd_game";
+        public int game_ops_magnet_button_index = 1;
+        private IPduReader pdu_reader_game_ops;
         private GameObject root;
         public bool magnet_on = false;
         public float forceMagnitude = 100.0f;
@@ -48,6 +51,12 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 if (this.pdu_reader == null)
                 {
                     throw new ArgumentException("can not found pdu_writer:" + pdu_reader_name);
+                }
+                pdu_reader_name = root_name + "_" + this.game_ops_name + "Pdu";
+                this.pdu_reader_game_ops = this.pdu_io.GetReader(pdu_reader_name);
+                if (this.pdu_reader_game_ops == null)
+                {
+                    throw new ArgumentException("can not found pdu_reader:" + pdu_reader_name);
                 }
                 var pdu_writer_name = root_name + "_" + this.topic_name[1] + "Pdu";
                 this.pdu_writer = this.pdu_io.GetWriter(pdu_writer_name);
@@ -126,6 +135,11 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             if (request)
             {
                 this.magnet_on = this.pdu_reader.GetReadOps().GetDataBool("magnet_on");
+            }
+            else
+            {
+                bool[] button_array = this.pdu_reader_game_ops.GetReadOps().GetDataBoolArray("button");
+                this.magnet_on = button_array[this.game_ops_magnet_button_index];
             }
         }
         public void DoControl()
