@@ -8,6 +8,9 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 
     public class CameraController : MonoBehaviour, IRobotPartsController, IRobotPartsConfig
     {
+        public string game_ops_name = "hako_cmd_game";
+        public int game_ops_camera_button_index = 2;
+        private IPduReader pdu_reader_game_ops;
         private GameObject root;
         private string root_name;
         private PduIoConnector pdu_io;
@@ -65,6 +68,12 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 if (this.pdu_writer == null)
                 {
                     throw new ArgumentException("can not found pdu_writer:" + pdu_writer_name);
+                }
+                pdu_reader_name = root_name + "_" + this.game_ops_name + "Pdu";
+                this.pdu_reader_game_ops = this.pdu_io.GetReader(pdu_reader_name);
+                if (this.pdu_reader_game_ops == null)
+                {
+                    throw new ArgumentException("can not found pdu_reader:" + pdu_reader_name);
                 }
                 this.sensor_name = string.Copy(this.transform.name);
                 this.my_camera = this.GetComponentInChildren<Camera>();
@@ -125,6 +134,13 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                     this.pdu_writer.GetWriteOps().SetData("request_id", current_id);
                     this.WriteCameraDataPdu(this.pdu_writer.GetWriteOps().Ref("image"));
                 }
+            }
+            bool[] button_array = this.pdu_reader_game_ops.GetReadOps().GetDataBoolArray("button");
+            if (button_array[this.game_ops_camera_button_index])
+            {
+                 //Debug.Log("SHOT!!");
+                this.Scan();
+                this.WriteCameraDataPdu(this.pdu_writer.GetWriteOps().Ref("image"));
             }
         }
 
