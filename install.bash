@@ -15,7 +15,7 @@ then
 fi
 source detect_os_type.bash
 
-CPP_RELEASE_VER=v1.2.0
+CPP_RELEASE_VER=v1.3.0
 CURR_DIR=$(pwd)
 PARENT_DIR=plugin-srcs/Assets/Plugin
 if [ ${INSTALL_WIN} = "FALSE" -a ${OS_TYPE} = "wsl2" ]
@@ -54,7 +54,12 @@ else
 	else
 		mkdir ${PARENT_DIR}/Libs
 		wget https://github.com/toppers/hakoniwa-core-cpp-client/releases/download/${CPP_RELEASE_VER}/${LIB} || { echo "ERROR: failed to download"; exit 1; }
-		mv ${LIB} ${PARENT_DIR}/Libs/
+		if [ ${LIB} = "libshakoc.arm64.dylib" ]
+		then
+			mv ${LIB} ${PARENT_DIR}/Libs/libshakoc.dylib
+		else
+			mv ${LIB} ${PARENT_DIR}/Libs/
+		fi
 		# REMOVE gRPC codes
 		rm -rf plugin-srcs/Assets/Plugin/src/PureCsharp/Gen*
 	fi
@@ -65,36 +70,5 @@ then
 	ROS_INS_DIR=plugin-srcs/ros_types
 else
 	ROS_INS_DIR=plugin-srcs/Assets/Resources/ros_types
+	cp -rp plugin-srcs/ros_types plugin-srcs/Assets/Resources/
 fi
-
-if [ -d ${ROS_INS_DIR} ]
-then
-	:
-else
-	mkdir ${ROS_INS_DIR}
-fi
-
-if [ -d ${ROS_INS_DIR}/json ]
-then
-	:
-else
-	wget https://github.com/toppers/hakoniwa-ros2pdu/releases/download/v1.0.0/json.zip || { echo "ERROR: failed to download"; exit 1; }
-	mv json.zip ${ROS_INS_DIR}/
-	cd ${ROS_INS_DIR}/
-	unzip json.zip || { echo "ERROR: failed to unzip"; exit 1; }
-	rm -f json.zip
-	cd ${CURR_DIR}
-fi
-
-if [ -d ${ROS_INS_DIR}/offset ]
-then
-	:
-else
-	wget https://github.com/toppers/hakoniwa-ros2pdu/releases/download/v1.0.0/offset.zip || { echo "ERROR: failed to download"; exit 1; }
-	mv offset.zip ${ROS_INS_DIR}/
-	cd ${ROS_INS_DIR}/
-	unzip offset.zip || { echo "ERROR: failed to unzip"; exit 1; }
-	rm -f offset.zip
-	cd ${CURR_DIR}
-fi
-
