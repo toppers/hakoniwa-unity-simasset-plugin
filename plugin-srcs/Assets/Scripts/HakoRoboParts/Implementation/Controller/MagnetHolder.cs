@@ -111,6 +111,10 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 
         void OnTriggerEnter(Collider other)
         {
+            if (magnet_on == false)
+            {
+                return;
+            }
             if (other.gameObject.name == "Magnet")
             {
                 return;
@@ -121,7 +125,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             {
                 if (info.Rigidbody == rb)
                 {
-                    Debug.Log("already attached");
+                    //Debug.Log("already attached");
                     return;
                 }
             }
