@@ -1,3 +1,4 @@
+using Hakoniwa.Core.Utils.Logger;
 using Hakoniwa.PluggableAsset.Assets.Robot;
 using Hakoniwa.PluggableAsset.Assets.Robot.Parts;
 using Hakoniwa.PluggableAsset.Communication.Connector;
@@ -33,29 +34,121 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             this.count = c;
         }
     }
+    public struct LiDAR3DParams
+    {
+        public bool Enabled;
+        public int NumberOfChannels;
+        public int RotationsPerSecond;
+        public int PointsPerSecond;
+        public float MaxDistance;
+        public float VerticalFOVUpper;
+        public float VerticalFOVLower;
+        public float HorizontalFOVStart;
+        public float HorizontalFOVEnd;
+        public bool DrawDebugPoints;
+
+    }
 
     public class LiDAR3D : MonoBehaviour, IRobotPartsSensor, IRobotPartsConfig
     {
+        public bool Enabled = true;
+        public int NumberOfChannels = 16;
+        public int RotationsPerSecond = 10;
+        public int PointsPerSecond = 10000;
+        public float MaxDistance = 10;
+        public float VerticalFOVUpper = -15f;
+        public float VerticalFOVLower = -25f;
+        public float HorizontalFOVStart = - 20f;
+        public float HorizontalFOVEnd = 20f;
+        public bool DrawDebugPoints = true;
+
+
+        /*
+         * パラメータ経緯(MaxHeight, MaxWidth)：
+         *  周波数：5Hz
+         *  垂直：-30° 〜 30°
+         *  水平：-90° 〜 90°
+         *  分解能：1° 
+         */
+        public const int MaxHeight = 61;
+        public const int MaxWidth = 181;
+
+        public float deg_interval_h = 1f;
+        public float deg_interval_v = 1f;
+
+        public int height = 61;
+        public int width = 181;
+        public int update_cycle = 1;
+
+        public int PointsPerRotation;
+        public int HorizontalPointsPerRotation;
+        public float HorizontalRanges;
+        public float VerticalRanges;
+        public float SecondsPerRotation;
+
+        public bool SetParams(LiDAR3DParams param)
+        {
+            PointsPerRotation = param.PointsPerSecond / param.RotationsPerSecond;
+            HorizontalPointsPerRotation = PointsPerRotation / param.NumberOfChannels;
+            HorizontalRanges = param.HorizontalFOVEnd - param.HorizontalFOVStart;
+            VerticalRanges = param.VerticalFOVUpper - param.VerticalFOVLower;
+            SecondsPerRotation = 1.0f / (float)param.RotationsPerSecond;
+
+            if (param.NumberOfChannels > MaxHeight)
+            {
+                SimpleLogger.Get().Log(Level.ERROR, "NumberOfChannels is invalid: " + param.NumberOfChannels);
+                return false;
+            }
+            if (HorizontalPointsPerRotation > MaxWidth)
+            {
+                SimpleLogger.Get().Log(Level.ERROR, "PointsPerRotation("+ PointsPerRotation + ") / NumberOfChannels(" + param.NumberOfChannels  + ") is invalid: " + HorizontalPointsPerRotation);
+                return false;
+            }
+
+            this.height = param.NumberOfChannels;
+            this.width = HorizontalPointsPerRotation;
+            this.deg_interval_h = HorizontalRanges / HorizontalPointsPerRotation;
+            this.deg_interval_v = VerticalRanges / param.NumberOfChannels;
+            this.update_cycle = Mathf.RoundToInt(SecondsPerRotation / Time.fixedDeltaTime);
+
+            this.Enabled = param.Enabled;
+            this.NumberOfChannels = param.NumberOfChannels;
+            this.RotationsPerSecond = param.RotationsPerSecond;
+            this.PointsPerSecond = param.PointsPerSecond;
+            this.MaxDistance = param.MaxDistance;
+            this.VerticalFOVLower = param.VerticalFOVLower;
+            this.VerticalFOVUpper = param.VerticalFOVUpper;
+            this.HorizontalFOVStart = param.HorizontalFOVStart;
+            this.HorizontalFOVEnd = param.HorizontalFOVEnd;
+            this.DrawDebugPoints = param.DrawDebugPoints;
+            return true;
+        }
+        public LiDAR3DParams GetParams()
+        {
+            LiDAR3DParams param = new LiDAR3DParams
+            {
+                Enabled = this.Enabled,
+                NumberOfChannels = this.NumberOfChannels,
+                RotationsPerSecond = this.RotationsPerSecond,
+                PointsPerSecond = this.PointsPerSecond,
+                MaxDistance = this.MaxDistance,
+                VerticalFOVUpper = this.VerticalFOVUpper,
+                VerticalFOVLower = this.VerticalFOVLower,
+                HorizontalFOVStart = this.HorizontalFOVStart,
+                HorizontalFOVEnd = this.HorizontalFOVEnd,
+                DrawDebugPoints = this.DrawDebugPoints
+            };
+            return param;
+        }
+
         private GameObject root;
         private GameObject sensor;
         private string root_name;
         private PduIoConnector pdu_io;
         private IPduWriter pdu_writer_lidar;
         private IPduWriter pdu_writer_pos;
-        public float scale = 1.0f;
-
-        private Quaternion init_angle;
-        public static bool is_debug = true;
-        public float contact_distance = 10f; /* m */
 
         readonly public int max_data_array_size = 176656;
-        public float min_pitch = -15f;
-        public float max_pitch = 15f;
-        public float min_yaw = -60f;
-        public float max_yaw = 60f;
-        public float deg_interval = 1f;
-        public int height = 61;
-        public int width = 181;
         private int point_step = 16;
         private int row_step = 0;
         private bool is_bigendian = false;
@@ -69,9 +162,10 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         private byte[] data;
         private Pdu[] pdu_fields;
 
-        public float view_interval = 5;
+        public float view_cycle_h = 2;
+        public float view_cycle_v = 2;
 
-        private float GetSensorValue(float degreeYaw, float degreePitch)
+        private float GetSensorValue(float degreeYaw, float degreePitch, bool debug)
         {
             // センサーの基本の前方向を取得
             Vector3 forward = sensor.transform.forward;
@@ -86,9 +180,9 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 
             RaycastHit hit;
 
-            if (Physics.Raycast(sensor.transform.position, finalDirection, out hit, contact_distance))
+            if (Physics.Raycast(sensor.transform.position, finalDirection, out hit, MaxDistance))
             {
-                if (is_debug && (degreeYaw % view_interval) < 0.0001 && (degreePitch % view_interval) < 0.0001)
+                if (debug)
                 {
                     Debug.DrawRay(sensor.transform.position, finalDirection * hit.distance, Color.red, 0.05f, false);
                 }
@@ -96,11 +190,11 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             }
             else
             {
-                if (is_debug && (degreeYaw % view_interval) < 0.0001 && (degreePitch % view_interval) < 0.0001)
+                if (debug)
                 {
-                    Debug.DrawRay(sensor.transform.position, finalDirection * contact_distance, Color.green, 0.05f, false);
+                    Debug.DrawRay(sensor.transform.position, finalDirection * MaxDistance, Color.green, 0.05f, false);
                 }
-                return contact_distance;
+                return MaxDistance;
             }
         }
 
@@ -111,11 +205,20 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             int dataIndex = 0;
             float fixedIntensity = 1.0f;
 
-            for (float pitch = min_pitch; pitch <= max_pitch; pitch += deg_interval)
+            bool debug_h = false;
+            bool debug_v = false;
+            int i_h = 0;
+            int i_v = 0;
+            for (float pitch = VerticalFOVLower; pitch <= VerticalFOVUpper; pitch += deg_interval_v)
             {
-                for (float yaw = min_yaw; yaw <= max_yaw; yaw += deg_interval)
+                debug_v = ((i_v % view_cycle_v) == 0);
+                i_v++;
+                i_h = 0;
+                for (float yaw = HorizontalFOVStart; yaw <= HorizontalFOVEnd; yaw += deg_interval_h)
                 {
-                    float distance = GetSensorValue(yaw, pitch);
+                    debug_h = ((i_h % view_cycle_h) == 0);
+                    i_h++;
+                    float distance = GetSensorValue(yaw, pitch, (DrawDebugPoints && debug_h && debug_v));
                     Vector3 point = CalculatePoint(distance, yaw, pitch);
 
                     Buffer.BlockCopy(BitConverter.GetBytes(point.z), 0, data, dataIndex, 4);//x
@@ -189,9 +292,8 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                     throw new ArgumentException("can not found pdu_reader:" + pdu_writer_name);
                 }
                 this.sensor = this.gameObject;
-                this.init_angle = this.sensor.transform.localRotation;
-                this.width = Mathf.CeilToInt((max_yaw - min_yaw) / deg_interval) + 1;
-                this.height = Mathf.CeilToInt((max_pitch - min_pitch) / deg_interval) + 1;
+                this.width = Mathf.CeilToInt((HorizontalFOVEnd - HorizontalFOVStart) / deg_interval_h) + 1;
+                this.height = Mathf.CeilToInt((VerticalFOVUpper - VerticalFOVLower) / deg_interval_v) + 1;
                 this.row_step = this.width * this.point_step;
 
                 if ((this.row_step * this.height) > this.max_data_array_size)
@@ -216,6 +318,10 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 
         public void UpdateSensorValues()
         {
+            if (this.Enabled == false)
+            {
+                return;
+            }
             this.count++;
             if (this.count < this.update_cycle)
             {
@@ -250,7 +356,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             "lidar_points",
             "lidar_pos"
         };
-        public int update_cycle = 1;
+        
         private int count = 0;
         public RosTopicMessageConfig[] getRosConfig()
         {
@@ -261,6 +367,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         public CommMethod comm_method = CommMethod.DIRECT;
         public RoboPartsConfigData[] GetRoboPartsConfig()
         {
+            this.SetParams(this.GetParams());
             RoboPartsConfigData[] configs = new RoboPartsConfigData[2];
             configs[0] = new RoboPartsConfigData();
             configs[0].io_dir = IoDir.WRITE;
