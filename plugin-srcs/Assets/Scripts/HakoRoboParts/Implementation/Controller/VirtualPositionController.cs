@@ -9,6 +9,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 {
     public class VirtualPositionController : MonoBehaviour, IRobotPartsController, IRobotPartsConfig
     {
+        public float scale = 1.0f;
         private GameObject root;
         private string root_name;
         private PduIoConnector pdu_io;
@@ -71,6 +72,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             euler.y = (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("z") + this.base_rotation_y;
             euler.z = (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("x");
 
+            pos = pos * scale;
             //Debug.Log("pos: " + pos);
             //Debug.Log("euler: " + euler);
             if (enableLerp)
