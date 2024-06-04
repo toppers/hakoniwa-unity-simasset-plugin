@@ -6,6 +6,7 @@ namespace Hakoniwa.AR.Core
 {
     public class HakoPlayerObject : MonoBehaviour
     {
+        public Rigidbody rd = null;
         IHakoPlayerState player_obj;
         private HakoPositionAndRotation curr_value = null;
         private HakoPositionAndRotation prev_value = null;
@@ -16,6 +17,12 @@ namespace Hakoniwa.AR.Core
             pr.position = new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z);
             pr.rotation = new Vector3(this.transform.eulerAngles.x, this.transform.eulerAngles.y, this.transform.eulerAngles.z);
             pr.name = new string(this.transform.name);
+            if (rd != null)
+            {
+                pr.position = rd.position;
+            }
+            //Debug.Log("Player(" + pr.name + "): " + pr.position);
+            //Debug.Log("Player's parent (" + pr.name + "): " + this.transform.parent.transform.position);
             if (this.player_obj != null)
             {
                 pr.state = this.player_obj.GetState();
