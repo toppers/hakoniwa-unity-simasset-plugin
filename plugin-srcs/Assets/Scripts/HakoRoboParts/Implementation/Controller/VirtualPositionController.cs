@@ -15,6 +15,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         private PduIoConnector pdu_io;
         private IPduReader pdu_reader;
         private float base_rotation_y;
+        public float base_position_y;
         private Rigidbody rd; // need rigidbody for trasporting baggage..
         public string[] topic_type = {
             "geometry_msgs/Twist"
@@ -65,21 +66,22 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             Vector3 euler = new Vector3();
 
             pos.x = -(float)this.pdu_reader.GetReadOps().Ref("linear").GetDataFloat64("y");
-            pos.y = (float)this.pdu_reader.GetReadOps().Ref("linear").GetDataFloat64("z");
+            pos.y = (float)this.pdu_reader.GetReadOps().Ref("linear").GetDataFloat64("z") + base_position_y;
             pos.z = (float)this.pdu_reader.GetReadOps().Ref("linear").GetDataFloat64("x");
 
             euler.x = -(float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("y");
             euler.y = (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("z") + this.base_rotation_y;
             euler.z = (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("x");
 
-            pos = pos * scale;
+            pos.x = pos.x * scale;
+            pos.z = pos.z * scale;
             //Debug.Log("pos: " + pos);
             //Debug.Log("euler: " + euler);
             if (enableLerp)
             {
                 Vector3 startPosition = this.rd.position;
                 Vector3 endPosition = pos;
-                float speed = 1.0f;
+                float speed = 8.0f;
                 float step = speed * Time.deltaTime;
                 this.rd.MovePosition(Vector3.Lerp(startPosition, endPosition, step));
             }
