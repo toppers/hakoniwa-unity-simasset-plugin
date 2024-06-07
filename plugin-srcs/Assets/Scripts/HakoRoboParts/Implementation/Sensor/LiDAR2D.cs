@@ -238,6 +238,32 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 i++;
             }
         }
+        private float AddNoiseToDistance(float distance)
+        {
+            // 距離の3%を精度の範囲として設定
+            float accuracyPercentage = sensorParameters.DistanceAccuracy.Percentage / 100.0f;
+            float noiseMean = 0;
+            float noiseVariance = distance * accuracyPercentage;
+
+            // ガウス分布ノイズを生成
+            float noise = GenerateGaussianNoise(noiseMean, noiseVariance);
+            float noisyDistance = distance + noise;
+
+            // 最大値の上限を考慮
+            return Mathf.Min(noisyDistance, this.range_max);
+        }
+
+        private float GenerateGaussianNoise(float mean, float variance)
+        {
+            System.Random random = new System.Random();
+            double u1 = 1.0 - random.NextDouble();
+            double u2 = 1.0 - random.NextDouble();
+            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
+            double randNormal = mean + Math.Sqrt(variance) * randStdNormal;
+            return (float)randNormal;
+        }
+
+
         private float GetSensorValue(float degreeYaw, float degreePitch, bool debug)
         {
             // センサーの基本の前方向を取得
@@ -255,11 +281,17 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 
             if (Physics.Raycast(sensor.transform.position, finalDirection, out hit, this.range_max))
             {
+                float distance = hit.distance;
+
+                // ノイズを追加
+                distance = AddNoiseToDistance(distance);
+
                 if (debug)
                 {
-                    Debug.DrawRay(sensor.transform.position, finalDirection * hit.distance, Color.red, 0.05f, false);
+                    Debug.DrawRay(sensor.transform.position, finalDirection * distance, Color.red, 0.05f, false);
                 }
-                return hit.distance;
+
+                return distance;
             }
             else
             {
