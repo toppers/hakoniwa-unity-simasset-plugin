@@ -25,10 +25,6 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
         public int offset;
         public int elm_size;
         public int array_size;
-
-        // for varray
-        public int varray_off_size;
-        public int varray_len_size;
     }
     public class PduBinOffsetInfo
     {
