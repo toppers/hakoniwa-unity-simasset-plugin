@@ -70,7 +70,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
             base_allocator.Add(new byte[ConstantValues.PduMetaDataSize]);
 
             // データを動的アロケータに追加
-            ConvertFromStruct(off_info, 0, base_allocator, src);
+            ConvertFromStruct(off_info, base_allocator, src);
 
             // 全体サイズを計算し、バッファを確保
             int totalSize = base_allocator.Size + heap_allocator.Size;
@@ -93,7 +93,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
             return obj;
         }
 
-        private static void ConvertFromStruct(PduBinOffsetInfo off_info, int base_off, DynamicAllocator allocator, IPduReadOperation src)
+        private static void ConvertFromStruct(PduBinOffsetInfo off_info, DynamicAllocator allocator, IPduReadOperation src)
         {
             //SimpleLogger.Get().Log(Level.INFO, "TO BIN:Start Convert: package=" + off_info.package_name + " type=" + off_info.type_name);
             foreach (var elm in off_info.elms)
@@ -103,12 +103,12 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     //primitive
                     if (elm.is_array)
                     {
-                        ConvertFromPrimtiveArray(elm, base_off, allocator, src);
+                        ConvertFromPrimtiveArray(elm, allocator, src);
                     }
                     else if (elm.is_varray)
                     {
                         int offset_from_heap = heap_allocator.Size;
-                        int array_size = ConvertFromPrimtiveArray(elm, offset_from_heap, heap_allocator, src);
+                        int array_size = ConvertFromPrimtiveArray(elm, heap_allocator, src);
                         var offset_from_heap_bytes = BitConverter.GetBytes(offset_from_heap);
                         var array_size_bytes = BitConverter.GetBytes(array_size);
                         allocator.Add(array_size_bytes);
@@ -116,7 +116,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     }
                     else
                     {
-                        ConvertFromPrimtive(elm, base_off, allocator, src);
+                        ConvertFromPrimtive(elm, allocator, src);
                     }
                 }
                 else
@@ -124,12 +124,12 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     //struct
                     if (elm.is_array)
                     {
-                        ConvertFromStructArray(elm, base_off + elm.offset, allocator, src);
+                        ConvertFromStructArray(elm, allocator, src);
                     }
                     else if (elm.is_varray)
                     {
                         int offset_from_heap = heap_allocator.Size;
-                        int array_size = ConvertFromStructArray(elm, offset_from_heap, heap_allocator, src);
+                        int array_size = ConvertFromStructArray(elm, heap_allocator, src);
                         var offset_from_heap_bytes = BitConverter.GetBytes(offset_from_heap);
                         var array_size_bytes = BitConverter.GetBytes(array_size);
                         allocator.Add(array_size_bytes);
@@ -138,25 +138,25 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     else
                     {
                         PduBinOffsetInfo struct_off_info = PduOffset.Get(elm.type_name);
-                        ConvertFromStruct(struct_off_info, base_off + elm.offset, allocator, src.Ref(elm.field_name).GetPduReadOps());
+                        ConvertFromStruct(struct_off_info, allocator, src.Ref(elm.field_name).GetPduReadOps());
                     }
                 }
             }
         }
 
-        private static int ConvertFromStructArray(PduBinOffsetElmInfo elm, int base_off, DynamicAllocator allocator, IPduReadOperation src)
+        private static int ConvertFromStructArray(PduBinOffsetElmInfo elm, DynamicAllocator allocator, IPduReadOperation src)
         {
             PduBinOffsetInfo struct_off_info = PduOffset.Get(elm.type_name);
             int array_size = src.Refs(elm.field_name).Length;
             for (int i = 0; i < array_size; i++)
             {
                 Pdu src_data = src.Refs(elm.field_name)[i];
-                ConvertFromStruct(struct_off_info, base_off + (i * elm.elm_size), allocator, src_data.GetPduReadOps());
+                ConvertFromStruct(struct_off_info, allocator, src_data.GetPduReadOps());
             }
             return array_size;
         }
 
-        private static int ConvertFromPrimtiveArray(PduBinOffsetElmInfo elm, int base_off, DynamicAllocator allocator, IPduReadOperation src)
+        private static int ConvertFromPrimtiveArray(PduBinOffsetElmInfo elm, DynamicAllocator allocator, IPduReadOperation src)
         {
             byte[] tmp_bytes = null;
             int array_size = 0;
@@ -244,7 +244,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
         }
 
 
-        private static void ConvertFromPrimtive(PduBinOffsetElmInfo elm, int off, DynamicAllocator allocator, IPduReadOperation src)
+        private static void ConvertFromPrimtive(PduBinOffsetElmInfo elm, DynamicAllocator allocator, IPduReadOperation src)
         {
             byte[] tmp_bytes = null;
             switch (elm.type_name)
