@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Hakoniwa.Core.Utils.Logger;
 using Hakoniwa.PluggableAsset.Assets.Robot.Parts;
+using UnityEngine;
 
 namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
 {
@@ -82,11 +83,16 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
 
             // 基本データをバッファにコピー
             byte[] baseData = base_allocator.ToArray();
-            Array.Copy(baseData, 0, buffer, (int)meta.base_off, baseData.Length);
+            //Debug.Log("base writer: off: " + meta.base_off + "src.len:" + baseData.Length + "dst.len: " + buffer.Length);
+            Array.Copy(baseData, 0, buffer, 0, baseData.Length);
 
-            // ヒープデータをバッファにコピー
-            byte[] heapData = heap_allocator.ToArray();
-            Array.Copy(heapData, 0, buffer, (int)meta.heap_off, heapData.Length);
+            if (heap_allocator.Size > 0)
+            {
+                // ヒープデータをバッファにコピー
+                byte[] heapData = heap_allocator.ToArray();
+                //Debug.Log("heap writer: heap_off=" + meta.heap_off + " src.len:" + heapData.Length + "dst.len: " + buffer.Length);
+                Array.Copy(heapData, 0, buffer, (int)meta.heap_off, heapData.Length);
+            }
 
             // PduCommBinaryDataオブジェクトを作成して返す
             var obj = new PduCommBinaryData(buffer);

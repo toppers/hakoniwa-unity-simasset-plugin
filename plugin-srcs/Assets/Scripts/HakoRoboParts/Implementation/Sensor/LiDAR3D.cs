@@ -376,7 +376,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             configs[0].value.type = this.topic_type[0];
             configs[0].value.class_name = ConstantValues.pdu_writer_class;
             configs[0].value.conv_class_name = ConstantValues.conv_pdu_writer_class;
-            configs[0].value.pdu_size = 177376;
+            configs[0].value.pdu_size = 177376 + ConstantValues.PduMetaDataSize;
             configs[0].value.write_cycle = this.update_cycle;
             configs[0].value.method_type = this.comm_method.ToString();
 
