@@ -80,9 +80,6 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
             //SimpleLogger.Get().Log(Level.INFO, "name: " + type_name);
             //SimpleLogger.Get().Log(Level.INFO, "total_size: " + totalSize + " base_allocator size: " + base_allocator.Size + " heap_allocator size: " + heap_allocator.Size);
 
-            // メタデータをバッファに設定
-            SetMetaDataToBuffer(buffer, meta);
-
             // 基本データをバッファにコピー
             byte[] baseData = base_allocator.ToArray();
             //SimpleLogger.Get().Log(Level.INFO, "base writer: off: " + meta.base_off + "src.len:" + baseData.Length + "dst.len: " + buffer.Length);
@@ -95,6 +92,8 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                 //SimpleLogger.Get().Log(Level.INFO, "heap writer: heap_off=" + meta.heap_off + " heapData.len:" + heapData.Length + " dst.len: " + buffer.Length);
                 Array.Copy(heapData, 0, buffer, (int)meta.heap_off, heapData.Length);
             }
+            // メタデータをバッファに設定
+            SetMetaDataToBuffer(buffer, meta);
 
             // PduCommBinaryDataオブジェクトを作成して返す
             var obj = new PduCommBinaryData(buffer);
