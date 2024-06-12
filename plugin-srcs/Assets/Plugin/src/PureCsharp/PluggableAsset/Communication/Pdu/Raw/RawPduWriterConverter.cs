@@ -77,20 +77,22 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
             int totalSize = base_allocator.Size + heap_allocator.Size;
             byte[] buffer = new byte[totalSize];
             meta.total_size = (uint)totalSize;
+            //SimpleLogger.Get().Log(Level.INFO, "name: " + type_name);
+            //SimpleLogger.Get().Log(Level.INFO, "total_size: " + totalSize + " base_allocator size: " + base_allocator.Size + " heap_allocator size: " + heap_allocator.Size);
 
             // メタデータをバッファに設定
             SetMetaDataToBuffer(buffer, meta);
 
             // 基本データをバッファにコピー
             byte[] baseData = base_allocator.ToArray();
-            //Debug.Log("base writer: off: " + meta.base_off + "src.len:" + baseData.Length + "dst.len: " + buffer.Length);
+            //SimpleLogger.Get().Log(Level.INFO, "base writer: off: " + meta.base_off + "src.len:" + baseData.Length + "dst.len: " + buffer.Length);
             Array.Copy(baseData, 0, buffer, 0, baseData.Length);
 
             if (heap_allocator.Size > 0)
             {
                 // ヒープデータをバッファにコピー
                 byte[] heapData = heap_allocator.ToArray();
-                //Debug.Log("heap writer: heap_off=" + meta.heap_off + " src.len:" + heapData.Length + "dst.len: " + buffer.Length);
+                //SimpleLogger.Get().Log(Level.INFO, "heap writer: heap_off=" + meta.heap_off + " heapData.len:" + heapData.Length + " dst.len: " + buffer.Length);
                 Array.Copy(heapData, 0, buffer, (int)meta.heap_off, heapData.Length);
             }
 
@@ -104,6 +106,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
             //SimpleLogger.Get().Log(Level.INFO, "TO BIN:Start Convert: package=" + off_info.package_name + " type=" + off_info.type_name);
             foreach (var elm in off_info.elms)
             {
+                //SimpleLogger.Get().Log(Level.INFO, "elm: " + elm.field_name + " type: " + elm.type_name + " is_array:" + elm.is_array + " is_varray: " + elm.is_varray);
                 if (elm.is_primitive)
                 {
                     //primitive
@@ -117,6 +120,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                         int array_size = ConvertFromPrimtiveArray(elm, heap_allocator, src);
                         var offset_from_heap_bytes = BitConverter.GetBytes(offset_from_heap);
                         var array_size_bytes = BitConverter.GetBytes(array_size);
+                        //SimpleLogger.Get().Log(Level.INFO, "member: " + elm.field_name + " array_size: " + array_size + " off: " + offset_from_heap);
                         allocator.Add(array_size_bytes);
                         allocator.Add(offset_from_heap_bytes);
                     }
@@ -170,68 +174,102 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
             {
                 case "int8":
                     array_size = src.GetDataInt8Array(elm.field_name).Length;
-                    tmp_bytes = new byte[array_size * elm.elm_size];
-                    Buffer.BlockCopy(src.GetDataInt8Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                    allocator.Add(tmp_bytes);
+                    if (array_size > 0)
+                    {
+                        tmp_bytes = new byte[array_size * elm.elm_size];
+                        Buffer.BlockCopy(src.GetDataInt8Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
+                        allocator.Add(tmp_bytes);
+                    }
                     return array_size;
                 case "int16":
                     array_size = src.GetDataInt16Array(elm.field_name).Length;
-                    tmp_bytes = new byte[src.GetDataInt16Array(elm.field_name).Length * elm.elm_size];
-                    Buffer.BlockCopy(src.GetDataInt16Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                    allocator.Add(tmp_bytes);
+                    if (array_size > 0)
+                    {
+                        tmp_bytes = new byte[src.GetDataInt16Array(elm.field_name).Length * elm.elm_size];
+                        Buffer.BlockCopy(src.GetDataInt16Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
+                        allocator.Add(tmp_bytes);
+                    }
                     return array_size;
                 case "int32":
                     array_size = src.GetDataInt32Array(elm.field_name).Length;
-                    tmp_bytes = new byte[src.GetDataInt32Array(elm.field_name).Length * elm.elm_size];
-                    Buffer.BlockCopy(src.GetDataInt32Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                    allocator.Add(tmp_bytes);
+                    if (array_size > 0)
+                    {
+                        tmp_bytes = new byte[src.GetDataInt32Array(elm.field_name).Length * elm.elm_size];
+                        Buffer.BlockCopy(src.GetDataInt32Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
+                        allocator.Add(tmp_bytes);
+                    }
                     return array_size;
                 case "int64":
                     array_size = src.GetDataInt64Array(elm.field_name).Length;
-                    tmp_bytes = new byte[src.GetDataInt64Array(elm.field_name).Length * elm.elm_size];
-                    Buffer.BlockCopy(src.GetDataInt64Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                    allocator.Add(tmp_bytes);
+                    if (array_size > 0)
+                    {
+                        tmp_bytes = new byte[src.GetDataInt64Array(elm.field_name).Length * elm.elm_size];
+                        Buffer.BlockCopy(src.GetDataInt64Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
+                        allocator.Add(tmp_bytes);
+                    }
                     return array_size;
                 case "uint8":
                     array_size = src.GetDataUInt8Array(elm.field_name).Length;
-                    tmp_bytes = new byte[src.GetDataUInt8Array(elm.field_name).Length * elm.elm_size];
-                    Buffer.BlockCopy(src.GetDataUInt8Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                    allocator.Add(tmp_bytes);
+                    if (array_size > 0)
+                    {
+                        tmp_bytes = new byte[src.GetDataUInt8Array(elm.field_name).Length * elm.elm_size];
+                        Buffer.BlockCopy(src.GetDataUInt8Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
+                        allocator.Add(tmp_bytes);
+                    }
                     return array_size;
                 case "uint16":
                     array_size = src.GetDataUInt16Array(elm.field_name).Length;
-                    tmp_bytes = new byte[src.GetDataUInt16Array(elm.field_name).Length * elm.elm_size];
-                    Buffer.BlockCopy(src.GetDataUInt16Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                    allocator.Add(tmp_bytes);
+                    if (array_size > 0)
+                    {
+                        tmp_bytes = new byte[src.GetDataUInt16Array(elm.field_name).Length * elm.elm_size];
+                        Buffer.BlockCopy(src.GetDataUInt16Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
+                        allocator.Add(tmp_bytes);
+                    }
                     return array_size;
                 case "uint32":
                     array_size = src.GetDataUInt32Array(elm.field_name).Length;
-                    tmp_bytes = new byte[src.GetDataUInt32Array(elm.field_name).Length * elm.elm_size];
-                    Buffer.BlockCopy(src.GetDataUInt32Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                    allocator.Add(tmp_bytes);
+                    if (array_size > 0)
+                    {
+                        tmp_bytes = new byte[src.GetDataUInt32Array(elm.field_name).Length * elm.elm_size];
+                        Buffer.BlockCopy(src.GetDataUInt32Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
+                        allocator.Add(tmp_bytes);
+                    }
                     return array_size;
                 case "uint64":
                     array_size = src.GetDataUInt64Array(elm.field_name).Length;
-                    tmp_bytes = new byte[src.GetDataUInt64Array(elm.field_name).Length * elm.elm_size];
-                    Buffer.BlockCopy(src.GetDataUInt64Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                    allocator.Add(tmp_bytes);
+                    if (array_size > 0)
+                    {
+                        tmp_bytes = new byte[src.GetDataUInt64Array(elm.field_name).Length * elm.elm_size];
+                        Buffer.BlockCopy(src.GetDataUInt64Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
+                        allocator.Add(tmp_bytes);
+                    }
                     return array_size;
                 case "float32":
                     array_size = src.GetDataFloat32Array(elm.field_name).Length;
-                    tmp_bytes = new byte[src.GetDataFloat32Array(elm.field_name).Length * elm.elm_size];
-                    Buffer.BlockCopy(src.GetDataFloat32Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                    allocator.Add(tmp_bytes);
+                    if (array_size > 0)
+                    {
+                        tmp_bytes = new byte[src.GetDataFloat32Array(elm.field_name).Length * elm.elm_size];
+                        Buffer.BlockCopy(src.GetDataFloat32Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
+                        allocator.Add(tmp_bytes);
+                    }
                     return array_size;
                 case "float64":
                     array_size = src.GetDataFloat64Array(elm.field_name).Length;
-                    tmp_bytes = new byte[src.GetDataFloat64Array(elm.field_name).Length * elm.elm_size];
-                    Buffer.BlockCopy(src.GetDataFloat64Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                    break;
+                    if (array_size > 0)
+                    {
+                        tmp_bytes = new byte[src.GetDataFloat64Array(elm.field_name).Length * elm.elm_size];
+                        Buffer.BlockCopy(src.GetDataFloat64Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
+                        allocator.Add(tmp_bytes);
+                    }
+                    return array_size;
                 case "bool":
                     array_size = src.GetDataBoolArray(elm.field_name).Length;
-                    tmp_bytes = new byte[src.GetDataBoolArray(elm.field_name).Length * elm.elm_size];
-                    Buffer.BlockCopy(src.GetDataBoolArray(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                    allocator.Add(tmp_bytes);
+                    if (array_size > 0)
+                    {
+                        tmp_bytes = new byte[src.GetDataBoolArray(elm.field_name).Length * elm.elm_size];
+                        Buffer.BlockCopy(src.GetDataBoolArray(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
+                        allocator.Add(tmp_bytes);
+                    }
                     return array_size;
                 case "string":
                     array_size = src.GetDataStringArray(elm.field_name).Length;
@@ -246,7 +284,6 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                 default:
                     throw new InvalidCastException("Error: Cannot find ptype: " + elm.type_name);
             }
-            return 0;
         }
 
 
@@ -305,7 +342,12 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     break;
                 case "string":
                     //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + System.Text.Encoding.ASCII.GetBytes(src.GetDataString(elm.field_name)));
-                    tmp_bytes = System.Text.Encoding.ASCII.GetBytes(src.GetDataString(elm.field_name));
+                    tmp_bytes = new byte[elm.elm_size];
+                    var str_bytes = System.Text.Encoding.ASCII.GetBytes(src.GetDataString(elm.field_name));
+                    if (tmp_bytes.Length > 0)
+                    {
+                        Array.Copy(str_bytes, 0, tmp_bytes, 0, str_bytes.Length);
+                    }
                     break;
                 default:
                     throw new InvalidCastException("Error: Can not found ptype: " + elm.type_name);
