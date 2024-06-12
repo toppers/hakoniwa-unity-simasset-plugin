@@ -155,7 +155,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             configs[0].value.type = this.topic_type;
             configs[0].value.class_name = ConstantValues.pdu_writer_class;
             configs[0].value.conv_class_name = ConstantValues.conv_pdu_writer_class;
-            configs[0].value.pdu_size = ConstantValues.LaserScan_pdu_size;
+            configs[0].value.pdu_size = ConstantValues.LaserScan_pdu_size + this.max_count * 2 * sizeof(float);
             configs[0].value.write_cycle = this.update_cycle;
             configs[0].value.method_type = this.comm_method.ToString();
             return configs;
