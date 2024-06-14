@@ -22,9 +22,14 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
             data.AddRange(bytes);
         }
 
-        public void Add(byte[] bytes, int offset, int count)
+        public void Add(byte[] bytes, int expectedOffset, int count)
         {
-            data.AddRange(new ArraySegment<byte>(bytes, offset, count));
+            int currentSize = data.Count;
+            if (currentSize < expectedOffset)
+            {
+                data.AddRange(new byte[expectedOffset - currentSize]);
+            }
+            data.AddRange(new ArraySegment<byte>(bytes, 0, count));
         }
 
         public byte[] ToArray()
@@ -34,6 +39,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
 
         public int Size => data.Count;
     }
+
 
 
     class RawPduWriterConverter : IPduWriterConverter
@@ -119,9 +125,8 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                         int array_size = ConvertFromPrimtiveArray(elm, heap_allocator, src);
                         var offset_from_heap_bytes = BitConverter.GetBytes(offset_from_heap);
                         var array_size_bytes = BitConverter.GetBytes(array_size);
-                        //SimpleLogger.Get().Log(Level.INFO, "member: " + elm.field_name + " array_size: " + array_size + " off: " + offset_from_heap);
-                        allocator.Add(array_size_bytes);
-                        allocator.Add(offset_from_heap_bytes);
+                        allocator.Add(array_size_bytes, elm.offset, array_size_bytes.Length);
+                        allocator.Add(offset_from_heap_bytes, elm.offset + array_size_bytes.Length, offset_from_heap_bytes.Length);
                     }
                     else
                     {
@@ -141,8 +146,8 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                         int array_size = ConvertFromStructArray(elm, heap_allocator, src);
                         var offset_from_heap_bytes = BitConverter.GetBytes(offset_from_heap);
                         var array_size_bytes = BitConverter.GetBytes(array_size);
-                        allocator.Add(array_size_bytes);
-                        allocator.Add(offset_from_heap_bytes);
+                        allocator.Add(array_size_bytes, elm.offset, array_size_bytes.Length);
+                        allocator.Add(offset_from_heap_bytes, elm.offset + array_size_bytes.Length, offset_from_heap_bytes.Length);
                     }
                     else
                     {
@@ -169,105 +174,95 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
         {
             byte[] tmp_bytes = null;
             int array_size = 0;
+            int element_size = elm.elm_size;
             switch (elm.type_name)
             {
                 case "int8":
                     array_size = src.GetDataInt8Array(elm.field_name).Length;
-                    if (array_size > 0)
+                    for (int i = 0; i < array_size; i++)
                     {
-                        tmp_bytes = new byte[array_size * elm.elm_size];
-                        Buffer.BlockCopy(src.GetDataInt8Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                        allocator.Add(tmp_bytes);
+                        tmp_bytes = new byte[] { (byte)src.GetDataInt8Array(elm.field_name)[i] };
+                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
                     }
                     return array_size;
                 case "int16":
                     array_size = src.GetDataInt16Array(elm.field_name).Length;
-                    if (array_size > 0)
+                    for (int i = 0; i < array_size; i++)
                     {
-                        tmp_bytes = new byte[src.GetDataInt16Array(elm.field_name).Length * elm.elm_size];
-                        Buffer.BlockCopy(src.GetDataInt16Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                        allocator.Add(tmp_bytes);
+                        tmp_bytes = BitConverter.GetBytes(src.GetDataInt16Array(elm.field_name)[i]);
+                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
                     }
                     return array_size;
                 case "int32":
                     array_size = src.GetDataInt32Array(elm.field_name).Length;
-                    if (array_size > 0)
+                    for (int i = 0; i < array_size; i++)
                     {
-                        tmp_bytes = new byte[src.GetDataInt32Array(elm.field_name).Length * elm.elm_size];
-                        Buffer.BlockCopy(src.GetDataInt32Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                        allocator.Add(tmp_bytes);
+                        tmp_bytes = BitConverter.GetBytes(src.GetDataInt32Array(elm.field_name)[i]);
+                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
                     }
                     return array_size;
                 case "int64":
                     array_size = src.GetDataInt64Array(elm.field_name).Length;
-                    if (array_size > 0)
+                    for (int i = 0; i < array_size; i++)
                     {
-                        tmp_bytes = new byte[src.GetDataInt64Array(elm.field_name).Length * elm.elm_size];
-                        Buffer.BlockCopy(src.GetDataInt64Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                        allocator.Add(tmp_bytes);
+                        tmp_bytes = BitConverter.GetBytes(src.GetDataInt64Array(elm.field_name)[i]);
+                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
                     }
                     return array_size;
                 case "uint8":
                     array_size = src.GetDataUInt8Array(elm.field_name).Length;
-                    if (array_size > 0)
+                    for (int i = 0; i < array_size; i++)
                     {
-                        tmp_bytes = new byte[src.GetDataUInt8Array(elm.field_name).Length * elm.elm_size];
-                        Buffer.BlockCopy(src.GetDataUInt8Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                        allocator.Add(tmp_bytes);
+                        tmp_bytes = new byte[] { src.GetDataUInt8Array(elm.field_name)[i] };
+                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
                     }
                     return array_size;
                 case "uint16":
                     array_size = src.GetDataUInt16Array(elm.field_name).Length;
-                    if (array_size > 0)
+                    for (int i = 0; i < array_size; i++)
                     {
-                        tmp_bytes = new byte[src.GetDataUInt16Array(elm.field_name).Length * elm.elm_size];
-                        Buffer.BlockCopy(src.GetDataUInt16Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                        allocator.Add(tmp_bytes);
+                        tmp_bytes = BitConverter.GetBytes(src.GetDataUInt16Array(elm.field_name)[i]);
+                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
                     }
                     return array_size;
                 case "uint32":
                     array_size = src.GetDataUInt32Array(elm.field_name).Length;
-                    if (array_size > 0)
+                    for (int i = 0; i < array_size; i++)
                     {
-                        tmp_bytes = new byte[src.GetDataUInt32Array(elm.field_name).Length * elm.elm_size];
-                        Buffer.BlockCopy(src.GetDataUInt32Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                        allocator.Add(tmp_bytes);
+                        tmp_bytes = BitConverter.GetBytes(src.GetDataUInt32Array(elm.field_name)[i]);
+                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
                     }
                     return array_size;
                 case "uint64":
                     array_size = src.GetDataUInt64Array(elm.field_name).Length;
-                    if (array_size > 0)
+                    for (int i = 0; i < array_size; i++)
                     {
-                        tmp_bytes = new byte[src.GetDataUInt64Array(elm.field_name).Length * elm.elm_size];
-                        Buffer.BlockCopy(src.GetDataUInt64Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                        allocator.Add(tmp_bytes);
+                        tmp_bytes = BitConverter.GetBytes(src.GetDataUInt64Array(elm.field_name)[i]);
+                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
                     }
                     return array_size;
                 case "float32":
                     array_size = src.GetDataFloat32Array(elm.field_name).Length;
-                    if (array_size > 0)
+                    for (int i = 0; i < array_size; i++)
                     {
-                        tmp_bytes = new byte[src.GetDataFloat32Array(elm.field_name).Length * elm.elm_size];
-                        Buffer.BlockCopy(src.GetDataFloat32Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                        allocator.Add(tmp_bytes);
+                        tmp_bytes = BitConverter.GetBytes(src.GetDataFloat32Array(elm.field_name)[i]);
+                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
                     }
                     return array_size;
                 case "float64":
                     array_size = src.GetDataFloat64Array(elm.field_name).Length;
-                    if (array_size > 0)
+                    for (int i = 0; i < array_size; i++)
                     {
-                        tmp_bytes = new byte[src.GetDataFloat64Array(elm.field_name).Length * elm.elm_size];
-                        Buffer.BlockCopy(src.GetDataFloat64Array(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                        allocator.Add(tmp_bytes);
+                        tmp_bytes = BitConverter.GetBytes(src.GetDataFloat64Array(elm.field_name)[i]);
+                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
                     }
                     return array_size;
                 case "bool":
                     array_size = src.GetDataBoolArray(elm.field_name).Length;
-                    if (array_size > 0)
+                    for (int i = 0; i < array_size; i++)
                     {
-                        tmp_bytes = new byte[src.GetDataBoolArray(elm.field_name).Length * elm.elm_size];
-                        Buffer.BlockCopy(src.GetDataBoolArray(elm.field_name), 0, tmp_bytes, 0, array_size * elm.elm_size);
-                        allocator.Add(tmp_bytes);
+                        tmp_bytes = BitConverter.GetBytes(src.GetDataBoolArray(elm.field_name)[i]);
+                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
                     }
                     return array_size;
                 case "string":
@@ -277,7 +272,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                         byte[] stringBytes = Encoding.ASCII.GetBytes(src.GetDataStringArray(elm.field_name)[i]);
                         byte[] paddedStringBytes = new byte[elm.elm_size];
                         Buffer.BlockCopy(stringBytes, 0, paddedStringBytes, 0, stringBytes.Length);
-                        allocator.Add(paddedStringBytes);
+                        allocator.Add(paddedStringBytes, elm.offset + i * element_size, paddedStringBytes.Length);
                     }
                     return array_size;
                 default:
@@ -292,69 +287,49 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
             switch (elm.type_name)
             {
                 case "int8":
-                    //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + src.GetDataInt8(elm.field_name));
-                    //tmp_bytes = BitConverter.GetBytes(src.GetDataInt8(elm.field_name));
                     sbyte sint8v = src.GetDataInt8(elm.field_name);
                     tmp_bytes = new byte[] { (byte)sint8v };
                     break;
                 case "int16":
-                    //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + src.GetDataInt16(elm.field_name));
                     tmp_bytes = BitConverter.GetBytes(src.GetDataInt16(elm.field_name));
                     break;
                 case "int32":
-                    //SimpleLogger.Get().Log(Level.INFO, off + ":" + elm.field_name + " = " + src.GetDataInt32(elm.field_name));
                     tmp_bytes = BitConverter.GetBytes(src.GetDataInt32(elm.field_name));
                     break;
                 case "int64":
-                    //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + src.GetDataInt64(elm.field_name));
                     tmp_bytes = BitConverter.GetBytes(src.GetDataInt64(elm.field_name));
                     break;
                 case "uint8":
-                    //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + src.GetDataUInt8(elm.field_name));
-                    //tmp_bytes = BitConverter.GetBytes(src.GetDataUInt8(elm.field_name));
                     var uint8v = src.GetDataUInt8(elm.field_name);
                     tmp_bytes = new byte[] { uint8v };
                     break;
                 case "uint16":
-                    //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + src.GetDataUInt16(elm.field_name));
                     tmp_bytes = BitConverter.GetBytes(src.GetDataUInt16(elm.field_name));
                     break;
                 case "uint32":
-                    //SimpleLogger.Get().Log(Level.INFO, off + ":" + elm.field_name + " = " + src.GetDataUInt32(elm.field_name));
                     tmp_bytes = BitConverter.GetBytes(src.GetDataUInt32(elm.field_name));
                     break;
                 case "uint64":
-                    //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + src.GetDataUInt64(elm.field_name));
                     tmp_bytes = BitConverter.GetBytes(src.GetDataUInt64(elm.field_name));
                     break;
                 case "float32":
-                    //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + src.GetDataFloat32(elm.field_name));
                     tmp_bytes = BitConverter.GetBytes(src.GetDataFloat32(elm.field_name));
                     break;
                 case "float64":
-                    //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + src.GetDataFloat64(elm.field_name));
                     tmp_bytes = BitConverter.GetBytes(src.GetDataFloat64(elm.field_name));
                     break;
                 case "bool":
-                    //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + src.GetDataBool(elm.field_name));
                     tmp_bytes = BitConverter.GetBytes(src.GetDataBool(elm.field_name));
                     break;
                 case "string":
-                    //SimpleLogger.Get().Log(Level.INFO, elm.field_name + " = " + System.Text.Encoding.ASCII.GetBytes(src.GetDataString(elm.field_name)));
                     tmp_bytes = new byte[elm.elm_size];
                     var str_bytes = System.Text.Encoding.ASCII.GetBytes(src.GetDataString(elm.field_name));
-                    if (tmp_bytes.Length > 0)
-                    {
-                        Array.Copy(str_bytes, 0, tmp_bytes, 0, str_bytes.Length);
-                    }
+                    Array.Copy(str_bytes, tmp_bytes, str_bytes.Length);
                     break;
                 default:
                     throw new InvalidCastException("Error: Can not found ptype: " + elm.type_name);
             }
-            //SimpleLogger.Get().Log(Level.INFO, elm.type_name + " : " + elm.field_name + " : " + woff);
-            //SimpleLogger.Get().Log(Level.INFO, "dst.len=" + dst_buffer.Length);
-            //SimpleLogger.Get().Log(Level.INFO, "src.len=" + tmp_bytes.Length);
-            allocator.Add(tmp_bytes);
+            allocator.Add(tmp_bytes, elm.offset, tmp_bytes.Length);
         }
 
         public IPduCommData ConvertToIoData(IPduWriter src)
