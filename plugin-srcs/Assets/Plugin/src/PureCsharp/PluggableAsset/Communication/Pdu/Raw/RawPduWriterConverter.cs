@@ -73,14 +73,12 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                 heap_off = (uint)ConstantValues.PduMetaDataSize + (uint)off_info.size,
                 total_size = (uint)0
             };
-            // メタデータのスペースを確保 (一時的なダミーデータ)
-            base_allocator.Add(new byte[ConstantValues.PduMetaDataSize]);
 
             // データを動的アロケータに追加
             ConvertFromStruct(off_info, base_allocator, src);
 
             // 全体サイズを計算し、バッファを確保
-            int totalSize = base_allocator.Size + heap_allocator.Size;
+            int totalSize = base_allocator.Size + heap_allocator.Size + ConstantValues.PduMetaDataSize;
             byte[] buffer = new byte[totalSize];
             meta.total_size = (uint)totalSize;
             //SimpleLogger.Get().Log(Level.INFO, "name: " + type_name);
@@ -89,7 +87,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
             // 基本データをバッファにコピー
             byte[] baseData = base_allocator.ToArray();
             //SimpleLogger.Get().Log(Level.INFO, "base writer: off: " + meta.base_off + "src.len:" + baseData.Length + "dst.len: " + buffer.Length);
-            Array.Copy(baseData, 0, buffer, 0, baseData.Length);
+            Array.Copy(baseData, 0, buffer, ConstantValues.PduMetaDataSize, baseData.Length);
 
             if (heap_allocator.Size > 0)
             {
