@@ -103,6 +103,36 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
 
             // PduCommBinaryDataオブジェクトを作成して返す
             var obj = new PduCommBinaryData(buffer);
+#if false
+            if (type_name == "hako_msgs/HakoStatusMagnetHolder")
+            {
+                // メモリダンプを追加
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("Memory Dump (hex):");
+                for (int i = 0; i < buffer.Length; i += 16)
+                {
+                    sb.AppendFormat("{0:X4}  ", i); // Offset
+                    for (int j = 0; j < 16; j++)
+                    {
+                        if (i + j < buffer.Length)
+                            sb.AppendFormat("{0:X2} ", buffer[i + j]);
+                        else
+                            sb.Append("   ");
+                    }
+                    sb.Append(" ");
+                    for (int j = 0; j < 16; j++)
+                    {
+                        if (i + j < buffer.Length)
+                        {
+                            char c = (char)buffer[i + j];
+                            sb.Append(Char.IsControl(c) ? '.' : c);
+                        }
+                    }
+                    sb.AppendLine();
+                }
+                Debug.Log(sb.ToString());
+            }
+#endif
             return obj;
         }
 
@@ -261,7 +291,8 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     array_size = src.GetDataBoolArray(elm.field_name).Length;
                     for (int i = 0; i < array_size; i++)
                     {
-                        tmp_bytes = BitConverter.GetBytes(src.GetDataBoolArray(elm.field_name)[i]);
+                        tmp_bytes = new byte[4];
+                        tmp_bytes[0] = src.GetDataBoolArray(elm.field_name)[i] ? (byte)1 : (byte)0;
                         allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
                     }
                     return array_size;
@@ -319,7 +350,10 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     tmp_bytes = BitConverter.GetBytes(src.GetDataFloat64(elm.field_name));
                     break;
                 case "bool":
-                    tmp_bytes = BitConverter.GetBytes(src.GetDataBool(elm.field_name));
+                    //SimpleLogger.Get().Log(Level.INFO, "elm: " + elm.field_name + " value: " + src.GetDataBool(elm.field_name) + " off: " + elm.offset);
+                    // bool型を4バイトにパディングする
+                    tmp_bytes = new byte[4];
+                    tmp_bytes[0] = src.GetDataBool(elm.field_name) ? (byte)1 : (byte)0;
                     break;
                 case "string":
                     tmp_bytes = new byte[elm.elm_size];
