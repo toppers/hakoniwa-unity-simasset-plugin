@@ -1,10 +1,12 @@
 using System;
 using Hakoniwa.Core.Utils.Logger;
+using Hakoniwa.PluggableAsset.Assets.Robot.Parts;
 
 namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
 {
     class RawPduReaderConverter : IPduReaderConverter
     {
+        HakoPduMetaDataType meta;
         public IPduCommData ConvertToIoData(IPduReader src)
         {
             if (!src.IsValidData())
@@ -24,10 +26,16 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
             {
                 throw new InvalidOperationException("Error: Can not found offset: type=" + type_name);
             }
-            ConvertFromStruct(off_info, 0, buffer, dst.GetWriteOps());
+            meta = new HakoPduMetaDataType();
+            meta.magicno = BitConverter.ToUInt32(buffer, 0);
+            meta.version = BitConverter.ToUInt32(buffer, 4);
+            meta.base_off = BitConverter.ToUInt32(buffer, 8);
+            meta.heap_off = BitConverter.ToUInt32(buffer, 12);
+            meta.total_size = BitConverter.ToUInt32(buffer, 16);
+            ConvertFromStruct(meta, off_info, ConstantValues.PduMetaDataSize, buffer, dst.GetWriteOps());
         }
 
-        private static void ConvertFromStruct(PduBinOffsetInfo off_info, int base_off, byte[] src_buffer, IPduWriteOperation dst)
+        private static void ConvertFromStruct(HakoPduMetaDataType meta, PduBinOffsetInfo off_info, int base_off, byte[] src_buffer, IPduWriteOperation dst)
         {
             //SimpleLogger.Get().Log(Level.INFO, "TO PDU:Start Convert: package=" + off_info.package_name + " type=" + off_info.type_name);
             foreach (var elm in off_info.elms)
@@ -37,11 +45,17 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     //primitive
                     if (elm.is_array)
                     {
-                        ConvertFromPrimtiveArray(elm, base_off, src_buffer, dst);
+                        ConvertFromPrimtiveArray(elm, base_off, elm.offset, elm.array_size, src_buffer, dst);
+                    }
+                    else if (elm.is_varray)
+                    {
+                        int array_size = BitConverter.ToInt32(src_buffer, base_off + elm.offset);
+                        int offset_from_heap = BitConverter.ToInt32(src_buffer, base_off + elm.offset + 4);
+                        ConvertFromPrimtiveArray(elm, (int)meta.heap_off, offset_from_heap, array_size, src_buffer, dst);
                     }
                     else
                     {
-                        ConvertFromPrimtive(elm, base_off, src_buffer, dst);
+                        ConvertFromPrimtive(elm, base_off, elm.offset, src_buffer, dst);
                     }
                 }
                 else
@@ -49,31 +63,37 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     //struct
                     if (elm.is_array)
                     {
-                        ConvertFromStructArray(elm, base_off + elm.offset, src_buffer, dst);
+                        ConvertFromStructArray(meta, elm, base_off, elm.offset, elm.array_size, src_buffer, dst);
+                    }
+                    else if (elm.is_varray)
+                    {
+                        int array_size = BitConverter.ToInt32(src_buffer, base_off + elm.offset);
+                        int offset_from_heap = BitConverter.ToInt32(src_buffer, base_off + elm.offset + 4);
+                        ConvertFromStructArray(meta, elm, (int)meta.heap_off, offset_from_heap, array_size, src_buffer, dst);
                     }
                     else
                     {
                         PduBinOffsetInfo struct_off_info = PduOffset.Get(elm.type_name);
-                        ConvertFromStruct(struct_off_info, base_off + elm.offset, src_buffer, dst.Ref(elm.field_name).GetPduWriteOps());
+                        ConvertFromStruct(meta, struct_off_info, base_off + elm.offset, src_buffer, dst.Ref(elm.field_name).GetPduWriteOps());
                     }
                 }
             }
         }
 
 
-        private static void ConvertFromStructArray(PduBinOffsetElmInfo elm, int base_off, byte[] src_buffer, IPduWriteOperation dst)
+        private static void ConvertFromStructArray(HakoPduMetaDataType meta, PduBinOffsetElmInfo elm, int base_off, int elm_off, int array_size, byte[] src_buffer, IPduWriteOperation dst)
         {
             PduBinOffsetInfo struct_off_info = PduOffset.Get(elm.type_name);
-            for (int i = 0; i < elm.array_size; i++)
+            for (int i = 0; i < array_size; i++)
             {
                 Pdu dst_data = dst.Refs(elm.field_name)[i];
-                ConvertFromStruct(struct_off_info, base_off + (i * elm.elm_size), src_buffer, dst_data.GetPduWriteOps());
+                ConvertFromStruct(meta, struct_off_info, (base_off + elm_off) + (i * elm.elm_size), src_buffer, dst_data.GetPduWriteOps());
             }
         }
 
-        private static void ConvertFromPrimtive(PduBinOffsetElmInfo elm, int base_off, byte[] src_buffer, IPduWriteOperation dst)
+        private static void ConvertFromPrimtive(PduBinOffsetElmInfo elm, int base_off, int elm_off, byte[] src_buffer, IPduWriteOperation dst)
         {
-            var off = base_off + elm.offset;
+            var off = base_off + elm_off;
             switch (elm.type_name)
             {
                 case "int8":
@@ -120,10 +140,10 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     throw new InvalidCastException("Error: Can not found ptype: " + elm.type_name);
             }
         }
-        private static void ConvertFromPrimtiveArray(PduBinOffsetElmInfo elm, int base_off, byte[] src_buffer, IPduWriteOperation dst)
+        private static void ConvertFromPrimtiveArray(PduBinOffsetElmInfo elm, int base_off, int elm_off, int array_size, byte[] src_buffer, IPduWriteOperation dst)
         {
-            int roff = base_off + elm.offset;
-            for (int i = 0; i < elm.array_size; i++)
+            int roff = base_off + elm_off;
+            for (int i = 0; i < array_size; i++)
             {
                 //SimpleLogger.Get().Log(Level.INFO, "field=" + elm.field_name);
                 //SimpleLogger.Get().Log(Level.INFO, "type=" + elm.type_name);

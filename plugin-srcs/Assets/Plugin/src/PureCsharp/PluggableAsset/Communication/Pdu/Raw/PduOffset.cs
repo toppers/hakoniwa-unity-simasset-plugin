@@ -6,9 +6,19 @@ using System.IO;
 
 namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
 {
+    public struct HakoPduMetaDataType
+    {
+        public uint magicno;
+        public uint version;
+        public uint base_off;
+        public uint heap_off;
+        public uint total_size;
+    }
+
     public class PduBinOffsetElmInfo
     {
         public bool is_array;
+        public bool is_varray;
         public bool is_primitive;
         public string field_name;
         public string type_name;
@@ -102,6 +112,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                 string[] attr = line.Split(':');
                 PduBinOffsetElmInfo elm = new PduBinOffsetElmInfo();
                 elm.is_array = attr[0].Equals("array");
+                elm.is_varray = attr[0].Equals("varray");
                 elm.is_primitive = attr[1].Equals("primitive");
                 elm.field_name = attr[2];
                 if (attr[3].Contains("/") || IsPrimitive(attr[3]))
@@ -113,14 +124,24 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     elm.type_name = package_name + "/" + attr[3];
                 }
                 elm.offset = int.Parse(attr[4]);
-                off_info.size = elm.offset + int.Parse(attr[5]);
-                if (attr.Length >= 7)
+                if (elm.is_array || elm.is_varray)
                 {
-                    elm.array_size = int.Parse(attr[6]);
-                    elm.elm_size = int.Parse(attr[5]) / elm.array_size;
+                    if (elm.is_array)
+                    {
+                        off_info.size = elm.offset + int.Parse(attr[5]);
+                        elm.array_size = int.Parse(attr[6]);
+                        elm.elm_size = int.Parse(attr[5]) / elm.array_size;
+                    }
+                    else
+                    {
+                        off_info.size = elm.offset + int.Parse(attr[6]);
+                        elm.array_size = -1;
+                        elm.elm_size = int.Parse(attr[5]);
+                    }
                 }
                 else
                 {
+                    off_info.size = elm.offset + int.Parse(attr[5]);
                     elm.array_size = 1;
                     elm.elm_size = int.Parse(attr[5]);
                 }

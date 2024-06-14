@@ -95,16 +95,19 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         public static readonly string pdu_writer_class = "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter";
         public static readonly string conv_pdu_reader_class = "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduReaderConverter";
         public static readonly string conv_pdu_writer_class = "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter";
-        public static readonly int Twist_pdu_size = 48;
-        public static readonly int JointState_pdu_size = 440;
-        public static readonly int Imu_pdu_size = 432;
-        public static readonly int Odometry_pdu_size = 944;
-        public static readonly int TFMessage_pdu_size = 320;
-        public static readonly int Image_pdu_size = 1229080;
-        public static readonly int CompressedImage_pdu_size = 102664;
-        public static readonly int CameraInfo_pdu_size = 580;
-        public static readonly int LaserScan_pdu_size = 3044;
-        public static readonly int Bool_pdu_size = 4;
-        public static readonly int IMU_pdu_size = 432;
+        public static readonly uint PduMetaDataVersion = 1;
+        public static readonly uint PduMetaDataMagicNo = 0x12345678;
+        public static readonly int PduMetaDataSize = 24;
+        public static readonly int Twist_pdu_size = 48 + PduMetaDataSize;
+        public static readonly int JointState_pdu_size = 440 + PduMetaDataSize;
+        public static readonly int Imu_pdu_size = 432 + PduMetaDataSize;
+        public static readonly int Odometry_pdu_size = 944 + PduMetaDataSize;
+        public static readonly int TFMessage_pdu_size = 320 + PduMetaDataSize;
+        public static readonly int Image_pdu_size = 1229080 + PduMetaDataSize;
+        public static readonly int CompressedImage_pdu_size = 102664 + PduMetaDataSize;
+        public static readonly int CameraInfo_pdu_size = 580 + PduMetaDataSize;
+        public static readonly int LaserScan_pdu_size = 256 + PduMetaDataSize;
+        public static readonly int Bool_pdu_size = 4 + PduMetaDataSize;
+        public static readonly int IMU_pdu_size = 432 + PduMetaDataSize;
     }
 }

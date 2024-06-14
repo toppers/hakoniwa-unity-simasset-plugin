@@ -5,9 +5,8 @@
         "Max": 4095
     },
     "DistanceAccuracy": {
-        "Percentage": 3.0,
-        "NoiseDistribution": "Gaussian",
-        "Variance": 0.5
+        "Percentage": 0.3,
+        "NoiseDistribution": "Gaussian"
     },
     "AngleRange": {
         "Min": -135.0,
@@ -16,7 +15,7 @@
         "ScanFrequency": 10
     },
     "InvalidMeasurement": {
-        "Probability": 0.1,
+        "Probability": 0.0,
         "InvalidValue": "Max"
     }
 }

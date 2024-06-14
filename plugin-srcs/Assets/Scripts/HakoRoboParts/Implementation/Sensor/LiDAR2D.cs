@@ -18,7 +18,6 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
     {
         public float Percentage { get; set; }
         public string NoiseDistribution { get; set; }
-        public float Variance { get; set; }
     }
 
     [Serializable]
@@ -187,7 +186,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             configs[0].value.type = this.topic_type;
             configs[0].value.class_name = ConstantValues.pdu_writer_class;
             configs[0].value.conv_class_name = ConstantValues.conv_pdu_writer_class;
-            configs[0].value.pdu_size = ConstantValues.LaserScan_pdu_size;
+            configs[0].value.pdu_size = ConstantValues.LaserScan_pdu_size + this.max_count * 2 * sizeof(float);
             configs[0].value.write_cycle = this.update_cycle;
             configs[0].value.method_type = this.comm_method.ToString();
             return configs;
@@ -243,23 +242,23 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             // 距離の3%を精度の範囲として設定
             float accuracyPercentage = sensorParameters.DistanceAccuracy.Percentage / 100.0f;
             float noiseMean = 0;
-            float noiseVariance = distance * accuracyPercentage;
+            float noiseStandardDeviation = distance * accuracyPercentage;
 
             // ガウス分布ノイズを生成
-            float noise = GenerateGaussianNoise(noiseMean, noiseVariance);
+            float noise = GenerateGaussianNoise(noiseMean, noiseStandardDeviation);
             float noisyDistance = distance + noise;
 
             // 最大値の上限を考慮
             return Mathf.Min(noisyDistance, this.range_max);
         }
 
-        private float GenerateGaussianNoise(float mean, float variance)
+        private float GenerateGaussianNoise(float mean, float standardDeviation)
         {
             System.Random random = new System.Random();
-            double u1 = 1.0 - random.NextDouble();
+            double u1 = 1.0 - random.NextDouble(); // (0, 1] の一様分布
             double u2 = 1.0 - random.NextDouble();
-            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
-            double randNormal = mean + Math.Sqrt(variance) * randStdNormal;
+            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); // 標準正規分布
+            double randNormal = mean + standardDeviation * randStdNormal; // 指定された平均と標準偏差による正規分布
             return (float)randNormal;
         }
 
