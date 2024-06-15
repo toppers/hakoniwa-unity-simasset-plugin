@@ -200,105 +200,98 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
 
         private static int ConvertFromPrimtiveArray(PduBinOffsetElmInfo elm, DynamicAllocator allocator, IPduReadOperation src)
         {
-            byte[] tmp_bytes = null;
             int array_size = 0;
             int element_size = elm.elm_size;
+            byte[] tmp_bytes = null;
+
             switch (elm.type_name)
             {
                 case "int8":
-                    array_size = src.GetDataInt8Array(elm.field_name).Length;
-                    for (int i = 0; i < array_size; i++)
-                    {
-                        tmp_bytes = new byte[] { (byte)src.GetDataInt8Array(elm.field_name)[i] };
-                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
-                    }
+                    sbyte[] int8Array = src.GetDataInt8Array(elm.field_name);
+                    array_size = int8Array.Length;
+                    tmp_bytes = new byte[array_size * element_size];
+                    Buffer.BlockCopy(int8Array, 0, tmp_bytes, 0, array_size);
+                    allocator.Add(tmp_bytes, elm.offset, array_size * element_size);
                     return array_size;
                 case "int16":
-                    array_size = src.GetDataInt16Array(elm.field_name).Length;
-                    for (int i = 0; i < array_size; i++)
-                    {
-                        tmp_bytes = BitConverter.GetBytes(src.GetDataInt16Array(elm.field_name)[i]);
-                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
-                    }
+                    short[] int16Array = src.GetDataInt16Array(elm.field_name);
+                    array_size = int16Array.Length;
+                    tmp_bytes = new byte[array_size * element_size];
+                    Buffer.BlockCopy(int16Array, 0, tmp_bytes, 0, tmp_bytes.Length);
+                    allocator.Add(tmp_bytes, elm.offset, tmp_bytes.Length);
                     return array_size;
                 case "int32":
-                    array_size = src.GetDataInt32Array(elm.field_name).Length;
-                    for (int i = 0; i < array_size; i++)
-                    {
-                        tmp_bytes = BitConverter.GetBytes(src.GetDataInt32Array(elm.field_name)[i]);
-                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
-                    }
+                    int[] int32Array = src.GetDataInt32Array(elm.field_name);
+                    array_size = int32Array.Length;
+                    tmp_bytes = new byte[array_size * element_size];
+                    Buffer.BlockCopy(int32Array, 0, tmp_bytes, 0, tmp_bytes.Length);
+                    allocator.Add(tmp_bytes, elm.offset, tmp_bytes.Length);
                     return array_size;
                 case "int64":
-                    array_size = src.GetDataInt64Array(elm.field_name).Length;
-                    for (int i = 0; i < array_size; i++)
-                    {
-                        tmp_bytes = BitConverter.GetBytes(src.GetDataInt64Array(elm.field_name)[i]);
-                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
-                    }
+                    long[] int64Array = src.GetDataInt64Array(elm.field_name);
+                    array_size = int64Array.Length;
+                    tmp_bytes = new byte[array_size * element_size];
+                    Buffer.BlockCopy(int64Array, 0, tmp_bytes, 0, tmp_bytes.Length);
+                    allocator.Add(tmp_bytes, elm.offset, tmp_bytes.Length);
                     return array_size;
                 case "uint8":
-                    array_size = src.GetDataUInt8Array(elm.field_name).Length;
-                    for (int i = 0; i < array_size; i++)
-                    {
-                        tmp_bytes = new byte[] { src.GetDataUInt8Array(elm.field_name)[i] };
-                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
-                    }
+                    byte[] uint8Array = src.GetDataUInt8Array(elm.field_name);
+                    array_size = uint8Array.Length;
+                    allocator.Add(uint8Array, elm.offset, array_size * element_size);
                     return array_size;
                 case "uint16":
-                    array_size = src.GetDataUInt16Array(elm.field_name).Length;
-                    for (int i = 0; i < array_size; i++)
-                    {
-                        tmp_bytes = BitConverter.GetBytes(src.GetDataUInt16Array(elm.field_name)[i]);
-                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
-                    }
+                    ushort[] uint16Array = src.GetDataUInt16Array(elm.field_name);
+                    array_size = uint16Array.Length;
+                    tmp_bytes = new byte[array_size * element_size];
+                    Buffer.BlockCopy(uint16Array, 0, tmp_bytes, 0, tmp_bytes.Length);
+                    allocator.Add(tmp_bytes, elm.offset, tmp_bytes.Length);
                     return array_size;
                 case "uint32":
-                    array_size = src.GetDataUInt32Array(elm.field_name).Length;
-                    for (int i = 0; i < array_size; i++)
-                    {
-                        tmp_bytes = BitConverter.GetBytes(src.GetDataUInt32Array(elm.field_name)[i]);
-                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
-                    }
+                    uint[] uint32Array = src.GetDataUInt32Array(elm.field_name);
+                    array_size = uint32Array.Length;
+                    tmp_bytes = new byte[array_size * element_size];
+                    Buffer.BlockCopy(uint32Array, 0, tmp_bytes, 0, tmp_bytes.Length);
+                    allocator.Add(tmp_bytes, elm.offset, tmp_bytes.Length);
                     return array_size;
                 case "uint64":
-                    array_size = src.GetDataUInt64Array(elm.field_name).Length;
-                    for (int i = 0; i < array_size; i++)
-                    {
-                        tmp_bytes = BitConverter.GetBytes(src.GetDataUInt64Array(elm.field_name)[i]);
-                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
-                    }
+                    ulong[] uint64Array = src.GetDataUInt64Array(elm.field_name);
+                    array_size = uint64Array.Length;
+                    tmp_bytes = new byte[array_size * element_size];
+                    Buffer.BlockCopy(uint64Array, 0, tmp_bytes, 0, tmp_bytes.Length);
+                    allocator.Add(tmp_bytes, elm.offset, tmp_bytes.Length);
                     return array_size;
                 case "float32":
-                    array_size = src.GetDataFloat32Array(elm.field_name).Length;
-                    for (int i = 0; i < array_size; i++)
-                    {
-                        tmp_bytes = BitConverter.GetBytes(src.GetDataFloat32Array(elm.field_name)[i]);
-                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
-                    }
+                    float[] float32Array = src.GetDataFloat32Array(elm.field_name);
+                    array_size = float32Array.Length;
+                    tmp_bytes = new byte[array_size * element_size];
+                    Buffer.BlockCopy(float32Array, 0, tmp_bytes, 0, tmp_bytes.Length);
+                    allocator.Add(tmp_bytes, elm.offset, tmp_bytes.Length);
                     return array_size;
                 case "float64":
-                    array_size = src.GetDataFloat64Array(elm.field_name).Length;
-                    for (int i = 0; i < array_size; i++)
-                    {
-                        tmp_bytes = BitConverter.GetBytes(src.GetDataFloat64Array(elm.field_name)[i]);
-                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
-                    }
+                    double[] float64Array = src.GetDataFloat64Array(elm.field_name);
+                    array_size = float64Array.Length;
+                    tmp_bytes = new byte[array_size * element_size];
+                    Buffer.BlockCopy(float64Array, 0, tmp_bytes, 0, tmp_bytes.Length);
+                    allocator.Add(tmp_bytes, elm.offset, tmp_bytes.Length);
                     return array_size;
                 case "bool":
-                    array_size = src.GetDataBoolArray(elm.field_name).Length;
+                    bool[] boolArray = src.GetDataBoolArray(elm.field_name);
+                    array_size = boolArray.Length;
+                    tmp_bytes = new byte[array_size * 4]; // 4バイト長のbool型データ用
                     for (int i = 0; i < array_size; i++)
                     {
-                        tmp_bytes = new byte[4];
-                        tmp_bytes[0] = src.GetDataBoolArray(elm.field_name)[i] ? (byte)1 : (byte)0;
-                        allocator.Add(tmp_bytes, elm.offset + i * element_size, tmp_bytes.Length);
+                        byte[] boolBytes = new byte[4];
+                        boolBytes[0] = boolArray[i] ? (byte)1 : (byte)0;
+                        Buffer.BlockCopy(boolBytes, 0, tmp_bytes, i * 4, 4);
                     }
+                    allocator.Add(tmp_bytes, elm.offset, tmp_bytes.Length);
                     return array_size;
                 case "string":
-                    array_size = src.GetDataStringArray(elm.field_name).Length;
+                    string[] stringArray = src.GetDataStringArray(elm.field_name);
+                    array_size = stringArray.Length;
                     for (int i = 0; i < array_size; i++)
                     {
-                        byte[] stringBytes = Encoding.ASCII.GetBytes(src.GetDataStringArray(elm.field_name)[i]);
+                        byte[] stringBytes = Encoding.ASCII.GetBytes(stringArray[i]);
                         byte[] paddedStringBytes = new byte[elm.elm_size];
                         Buffer.BlockCopy(stringBytes, 0, paddedStringBytes, 0, stringBytes.Length);
                         allocator.Add(paddedStringBytes, elm.offset + i * element_size, paddedStringBytes.Length);
