@@ -5,8 +5,11 @@
         "Max": 4095
     },
     "DistanceAccuracy": {
-        "Percentage": 0.3,
-        "NoiseDistribution": "Gaussian"
+        "type": "independent",
+        "DistanceIndepedentAccuracy": {
+            "StdDev": 0.00505,
+            "NoiseDistribution": "Gaussian"
+        }
     },
     "AngleRange": {
         "Min": -135.0,

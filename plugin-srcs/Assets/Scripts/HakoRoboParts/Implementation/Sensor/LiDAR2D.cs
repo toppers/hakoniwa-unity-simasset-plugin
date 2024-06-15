@@ -14,10 +14,24 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
     }
 
     [Serializable]
-    public class DistanceAccuracy
+    public class DistanceDepedentAccuracy
     {
         public float Percentage { get; set; }
         public string NoiseDistribution { get; set; }
+
+    }
+    [Serializable]
+    public class DistanceIndepedentAccuracy
+    {
+        public float StdDev { get; set; }
+        public string NoiseDistribution { get; set; }
+    }
+    [Serializable]
+    public class DistanceAccuracy
+    {
+        public string type { get; set; } //independent, dependent
+        public DistanceDepedentAccuracy DistanceDepedentAccuracy { get; set; }
+        public DistanceIndepedentAccuracy DistanceIndepedentAccuracy { get; set; }
     }
 
     [Serializable]
@@ -49,10 +63,11 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
     {
         static int CalculateDistanceArraySize(AngleRange angleRange)
         {
-            //Debug.Log("angleRange: " + angleRange);
-            int size = (int)Math.Round((angleRange.Max - angleRange.Min) / angleRange.Resolution);
+            // Debug.Log("angleRange: " + angleRange);
+            int size = (int)Math.Ceiling((angleRange.Max - angleRange.Min) / angleRange.Resolution);
             return size;
         }
+
         static int CalculateUpdateCycle(float fixedUpdatePeriod, int scanFrequency)
         {
             // Calculate the period of a single LiDAR scan
@@ -229,7 +244,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         {
             this.sensor.transform.localRotation = this.init_angle;
             int i = 0;
-            for (float yaw = this.sensorParameters.AngleRange.Min; i < this.max_count; yaw += this.sensorParameters.AngleRange.Resolution)
+            for (float yaw = this.sensorParameters.AngleRange.Max; i < this.max_count; yaw -= this.sensorParameters.AngleRange.Resolution)
             {
                 float distance = GetSensorValue(yaw, 0, is_debug);
                 //Debug.Log("v[" + i + "]=" + distances[i]);
@@ -237,12 +252,23 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 i++;
             }
         }
-        private float AddNoiseToDistance(float distance)
+        private float AddNoiseToDistanceDependent(float distance)
         {
-            // 距離の3%を精度の範囲として設定
-            float accuracyPercentage = sensorParameters.DistanceAccuracy.Percentage / 100.0f;
+            float accuracyPercentage = sensorParameters.DistanceAccuracy.DistanceDepedentAccuracy.Percentage / 100.0f;
             float noiseMean = 0;
             float noiseStandardDeviation = distance * accuracyPercentage;
+
+            // ガウス分布ノイズを生成
+            float noise = GenerateGaussianNoise(noiseMean, noiseStandardDeviation);
+            float noisyDistance = distance + noise;
+
+            // 最大値の上限を考慮
+            return Mathf.Min(noisyDistance, this.range_max);
+        }
+        private float AddNoiseToDistanceInDependent(float distance)
+        {
+            float noiseMean = 0;
+            float noiseStandardDeviation = sensorParameters.DistanceAccuracy.DistanceIndepedentAccuracy.StdDev;
 
             // ガウス分布ノイズを生成
             float noise = GenerateGaussianNoise(noiseMean, noiseStandardDeviation);
@@ -283,7 +309,14 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 float distance = hit.distance;
 
                 // ノイズを追加
-                distance = AddNoiseToDistance(distance);
+                if (sensorParameters.DistanceAccuracy.type == "dependent")
+                {
+                    distance = AddNoiseToDistanceDependent(distance);
+                }
+                else
+                {
+                    distance = AddNoiseToDistanceInDependent(distance);
+                }
 
                 if (debug)
                 {
