@@ -184,7 +184,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
                         {
                             elms[i] = new Pdu(array_type);
                         }
-                        SimpleLogger.Get().Log(Level.DEBUG, "STRUCT ARRAY:" + e.name + " type=" + e.type　+ " array_size: " + elms.Length);
+                        SimpleLogger.Get().Log(Level.DEBUG, "STRUCT ARRAY:" + e.name + " type=" + e.type + " array_size: " + elms.Length);
                         this.field_struct_array.Add(e.name, elms);
                     }
                 }
@@ -207,7 +207,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
             return;
         }
 
-        public Pdu(string arg_pdu_type_name,string parent_package_name = null)
+        public Pdu(string arg_pdu_type_name, string parent_package_name = null)
         {
             this.pdu_type_name = arg_pdu_type_name;
             this.SetPdu(arg_pdu_type_name, parent_package_name);
@@ -229,12 +229,14 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
                     if (IsPrimitiveType(array_type))
                     {
                         SimpleLogger.Get().Log(Level.DEBUG, "RESET PRIMITIVE ARRAY:" + e.name + " type=" + e.type);
-                        this.ResetArrayInitValue(array_type, e.name, GetArraySize(e.type));
+                        //this.ResetArrayInitValue(array_type, e.name, GetArraySize(e.type));
+                        this.ResetArrayInitValue(array_type, e.name);
                     }
                     else
                     {
-                        Pdu[] elms = new Pdu[GetArraySize(e.type)];
-                        for (int i = 0; i < elms.Length; i++)
+                        Pdu[] elms = new Pdu[this.field_struct_array[e.name].Length];
+                        //Pdu[] elms = new Pdu[GetArraySize(e.type)];
+                        for (int i = 0; i < this.field_struct_array[e.name].Length; i++)
                         {
                             elms[i] = new Pdu(array_type);
                         }
@@ -412,57 +414,77 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
                     break;
             }
         }
-        private void ResetArrayInitValue(string array_type, string name, int array_size)
+        private void ResetArrayInitValue(string array_type, string name)
         {
+            int array_size = 0;
             switch (array_type)
             {
                 case "int8":
+                    array_size = this.field_int8_array[name].Length;
                     this.field_int8_array.Remove(name);
                     this.field_int8_array.Add(name, new sbyte[array_size]);
                     break;
                 case "uint8":
+                    array_size = this.field_uint8_array[name].Length;
                     this.field_uint8_array.Remove(name);
                     this.field_uint8_array.Add(name, new byte[array_size]);
                     break;
                 case "int16":
+                    array_size = this.field_int16_array[name].Length;
                     this.field_int16_array.Remove(name);
                     this.field_int16_array.Add(name, new Int16[array_size]);
                     break;
                 case "uint16":
+                    array_size = this.field_uint16_array[name].Length;
                     this.field_uint16_array.Remove(name);
                     this.field_uint16_array.Add(name, new UInt16[array_size]);
                     break;
                 case "int32":
+                    array_size = this.field_int32_array[name].Length;
                     this.field_int32_array.Remove(name);
                     this.field_int32_array.Add(name, new Int32[array_size]);
                     break;
                 case "uint32":
+                    array_size = this.field_uint32_array[name].Length;
                     this.field_uint32_array.Remove(name);
                     this.field_uint32_array.Add(name, new UInt32[array_size]);
                     break;
                 case "int64":
+                    array_size = this.field_int64_array[name].Length;
                     this.field_int64_array.Remove(name);
                     this.field_int64_array.Add(name, new Int64[array_size]);
                     break;
                 case "uint64":
+                    array_size = this.field_uint64_array[name].Length;
                     this.field_uint64_array.Remove(name);
                     this.field_uint64_array.Add(name, new UInt64[array_size]);
                     break;
                 case "float32":
+                    array_size = this.field_float32_array[name].Length;
                     this.field_float32_array.Remove(name);
                     this.field_float32_array.Add(name, new float[array_size]);
                     break;
                 case "float64":
+                    array_size = this.field_float64_array[name].Length;
                     this.field_float64_array.Remove(name);
                     this.field_float64_array.Add(name, new double[array_size]);
                     break;
                 case "string":
-		    if (this.field_string_array.Count == 0) {
+#if true
+                    array_size = this.field_string_array[name].Length;
+                    this.field_string_array.Remove(name);
+                    this.field_string_array.Add(name, new string[array_size]);
+#else
+                    //original code...
+                    array_size = this.field_string_array[name].Length;
+                    if (this.field_string_array.Count == 0) {
                     	this.field_string_array.Remove(name);
                     	this.field_string_array.Add(name, new string[array_size]);
-		    }
+		            }
+#endif
                     break;
                 case "bool":
+                    array_size = this.field_bool_array[name].Length;
                     this.field_bool_array.Remove(name);
                     this.field_bool_array.Add(name, new bool[array_size]);
                     break;
@@ -483,7 +505,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu
 
         public void SetData(string field_name, byte value)
         {
-            if (!this.field_uint8.ContainsKey(field_name)) 
+            if (!this.field_uint8.ContainsKey(field_name))
             {
                 throw new ArgumentException("Invalid PDU access : field_name=" + field_name + " value=" + value);
             }
