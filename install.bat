@@ -24,6 +24,7 @@ if not exist %PARENT_DIR%\Libs (
     move %LIB% %PARENT_DIR%\Libs\
     rem REMOVE gRPC codes
     echo Removing gRPC codes
+    del /f /q plugin-srcs\Assets\Plugin\src\PureCsharp\Gen*
     rmdir /s /q plugin-srcs\Assets\Plugin\src\PureCsharp\Gen*
     echo Installation completed successfully.
 ) else (
