@@ -97,6 +97,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 this.RenderTextureRef = new RenderTexture(texture.width, texture.height, 32);
                 this.my_camera.targetTexture = this.RenderTextureRef;
                 this.sensor = this.gameObject;
+
             }
         }
         public RosTopicMessageConfig[] getRosConfig()
@@ -151,6 +152,13 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         public float move_step = 1.0f;  // 一回の動きのステップ量
         private float camera_move_button_time_duration = 0f;
         public float camera_move_button_threshold_speedup = 1.0f;
+
+        void LateUpdate()
+        {
+            Vector3 parentEulerAngles = my_camera.transform.parent.eulerAngles;
+            my_camera.transform.localEulerAngles = new Vector3(manual_rotation_deg - parentEulerAngles.x, 0, -parentEulerAngles.z);
+        }
+
         public void DoControl()
         {
             bool request = this.pdu_reader.GetReadOps().Ref("header").GetDataBool("request");
@@ -169,7 +177,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             bool[] button_array = this.pdu_reader_game_ops.GetReadOps().GetDataBoolArray("button");
             if (button_array[this.game_ops_camera_button_index])
             {
-                 //Debug.Log("SHOT!!");
+                //Debug.Log("SHOT!!");
                 this.Scan();
                 this.WriteCameraDataPdu(this.pdu_writer.GetWriteOps().Ref("image"));
             }
@@ -207,16 +215,15 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 displayImage.texture = this.RenderTextureRef;
             }
         }
+        private float manual_rotation_deg = 0;
         private void RotateCamera(float step)
         {
-            Vector3 currentRotation = my_camera.transform.localEulerAngles;
-            float newPitch = currentRotation.x + step;
+            float newPitch = manual_rotation_deg + step;
+
+            // ピッチを-90度から15度の間に制限
             if (newPitch > 180) newPitch -= 360; // Convert angles greater than 180 to negative values
-
-            // Clamp the pitch to be within the desired range
-            newPitch = Mathf.Clamp(newPitch, camera_move_up_deg, camera_move_down_deg);
-
-            my_camera.transform.localEulerAngles = new Vector3(newPitch, currentRotation.y, currentRotation.z);
+            newPitch = Mathf.Clamp(newPitch, this.camera_move_up_deg, this.camera_move_down_deg);
+            manual_rotation_deg = newPitch;
         }
         private void Scan()
         {
