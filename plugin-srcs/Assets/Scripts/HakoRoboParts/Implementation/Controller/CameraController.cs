@@ -17,6 +17,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         public float camera_move_down_deg = 90.0f;
         private IPduReader pdu_reader_game_ops;
         private IPduReader pdu_reader_camera_move;
+        private IPduWriter pdu_writer_camera_info;
         private GameObject root;
         private string root_name;
         private PduIoConnector pdu_io;
@@ -37,12 +38,14 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         public string[] topic_type = {
             "hako_msgs/HakoCmdCamera",
             "hako_msgs/HakoCameraData",
-            "hako_msgs/HakoCmdCameraMove"
+            "hako_msgs/HakoCmdCameraMove",
+            "hako_msgs/HakoCameraInfo"
         };
         public string[] topic_name = {
             "hako_cmd_camera",
             "hako_camera_data",
-            "hako_cmd_camera_move"
+            "hako_cmd_camera_move",
+            "hako_camera_info"
         };
 
         public void Initialize(object obj)
@@ -75,13 +78,19 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 }
                 pdu_reader_name = root_name + "_" + this.topic_name[2] + "Pdu";
                 this.pdu_reader_camera_move = this.pdu_io.GetReader(pdu_reader_name);
-                if (this.pdu_reader == null)
+                if (this.pdu_reader_camera_move == null)
                 {
                     throw new ArgumentException("can not found pdu_writer:" + pdu_reader_name);
                 }
                 var pdu_writer_name = root_name + "_" + this.topic_name[1] + "Pdu";
                 this.pdu_writer = this.pdu_io.GetWriter(pdu_writer_name);
                 if (this.pdu_writer == null)
+                {
+                    throw new ArgumentException("can not found pdu_writer:" + pdu_writer_name);
+                }
+                pdu_writer_name = root_name + "_" + this.topic_name[3] + "Pdu";
+                this.pdu_writer_camera_info = this.pdu_io.GetWriter(pdu_writer_name);
+                if (this.pdu_writer_camera_info == null)
                 {
                     throw new ArgumentException("can not found pdu_writer:" + pdu_writer_name);
                 }
@@ -108,7 +117,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         public CommMethod comm_method = CommMethod.DIRECT;
         public RoboPartsConfigData[] GetRoboPartsConfig()
         {
-            RoboPartsConfigData[] configs = new RoboPartsConfigData[3];
+            RoboPartsConfigData[] configs = new RoboPartsConfigData[4];
             configs[0] = new RoboPartsConfigData();
             configs[0].io_dir = IoDir.READ;
             configs[0].io_method = this.io_method;
@@ -131,7 +140,6 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             configs[1].value.write_cycle = 1;
             configs[1].value.method_type = this.comm_method.ToString();
 
-            Debug.Log("topic len: " + this.topic_name.Length);
             configs[2] = new RoboPartsConfigData();
             configs[2].io_dir = IoDir.READ;
             configs[2].io_method = this.io_method;
@@ -143,12 +151,32 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             configs[2].value.write_cycle = 1;
             configs[2].value.method_type = this.comm_method.ToString();
 
+
+            configs[3] = new RoboPartsConfigData();
+            configs[3].io_dir = IoDir.WRITE;
+            configs[3].io_method = this.io_method;
+            configs[3].value.org_name = this.topic_name[3];
+            configs[3].value.type = this.topic_type[3];
+            configs[3].value.class_name = ConstantValues.pdu_writer_class;
+            configs[3].value.conv_class_name = ConstantValues.conv_pdu_writer_class;
+            configs[3].value.pdu_size = 32 + ConstantValues.PduMetaDataSize;
+            configs[3].value.write_cycle = 1;
+            configs[3].value.method_type = this.comm_method.ToString();
+
             return configs;
         }
 
+        /*
+         * Camera Image
+         */
         public int current_id = -1;
         public int request_id = 0;
         public int encode_type = 0;
+        /*
+         * Camera Move
+         */
+        public int move_current_id = -1;
+        public int move_request_id = 0;
         public float move_step = 1.0f;  // 一回の動きのステップ量
         private float camera_move_button_time_duration = 0f;
         public float camera_move_button_threshold_speedup = 1.0f;
@@ -161,6 +189,9 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
 
         public void DoControl()
         {
+            /*
+             * Camera Image Request
+             */
             bool request = this.pdu_reader.GetReadOps().Ref("header").GetDataBool("request");
             if (request)
             {
@@ -180,6 +211,27 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 //Debug.Log("SHOT!!");
                 this.Scan();
                 this.WriteCameraDataPdu(this.pdu_writer.GetWriteOps().Ref("image"));
+            }
+
+
+            /*
+             * Camera Move Request
+             */
+            bool request_move = this.pdu_reader_camera_move.GetReadOps().Ref("header").GetDataBool("request");
+            if (request_move)
+            {
+                move_request_id = this.pdu_reader_camera_move.GetReadOps().GetDataInt32("request_id");
+                if (move_current_id != move_request_id)
+                {
+                    move_current_id = move_request_id;
+                    var target_degree = (float)this.pdu_reader_camera_move.GetReadOps().Ref("angle").GetDataFloat64("y");
+                    SetCameraAngle(-target_degree);
+                    Debug.Log("reqest move: " + target_degree + " current deg: " + this.manual_rotation_deg);
+                    this.pdu_writer_camera_info.GetWriteOps().SetData("request_id", move_current_id);
+                    this.pdu_writer_camera_info.GetWriteOps().Ref("angle").SetData("x", (double)0);
+                    this.pdu_writer_camera_info.GetWriteOps().Ref("angle").SetData("y", -(double)this.manual_rotation_deg);
+                    this.pdu_writer_camera_info.GetWriteOps().Ref("angle").SetData("z", (double)0);
+                }
             }
             if (button_array[this.game_ops_camera_move_up_index])
             {
@@ -219,6 +271,15 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         private void RotateCamera(float step)
         {
             float newPitch = manual_rotation_deg + step;
+
+            // ピッチを-90度から15度の間に制限
+            if (newPitch > 180) newPitch -= 360; // Convert angles greater than 180 to negative values
+            newPitch = Mathf.Clamp(newPitch, this.camera_move_up_deg, this.camera_move_down_deg);
+            manual_rotation_deg = newPitch;
+        }
+        private void SetCameraAngle(float angle)
+        {
+            float newPitch = angle;
 
             // ピッチを-90度から15度の間に制限
             if (newPitch > 180) newPitch -= 360; // Convert angles greater than 180 to negative values
