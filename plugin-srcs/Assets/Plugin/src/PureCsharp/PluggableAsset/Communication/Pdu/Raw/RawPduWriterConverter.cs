@@ -11,9 +11,11 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
     public class DynamicAllocator
     {
         private List<byte> data;
+        private bool is_heap;
 
-        public DynamicAllocator()
+        public DynamicAllocator(bool is_heap)
         {
+            this.is_heap = is_heap;
             data = new List<byte>();
         }
 
@@ -24,10 +26,13 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
 
         public void Add(byte[] bytes, int expectedOffset, int count)
         {
-            int currentSize = data.Count;
-            if (currentSize < expectedOffset)
+            if (is_heap == false)
             {
-                data.AddRange(new byte[expectedOffset - currentSize]);
+                int currentSize = data.Count;
+                if (currentSize < expectedOffset)
+                {
+                    data.AddRange(new byte[expectedOffset - currentSize]);
+                }
             }
             data.AddRange(new ArraySegment<byte>(bytes, 0, count));
         }
@@ -62,8 +67,8 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
             {
                 throw new InvalidOperationException("Error: Can not found offset: type=" + type_name);
             }
-            DynamicAllocator base_allocator = new DynamicAllocator();
-            heap_allocator = new DynamicAllocator();
+            DynamicAllocator base_allocator = new DynamicAllocator(false);
+            heap_allocator = new DynamicAllocator(true);
             // メタデータを設定
             HakoPduMetaDataType meta = new HakoPduMetaDataType
             {
@@ -239,6 +244,7 @@ namespace Hakoniwa.PluggableAsset.Communication.Pdu.Raw
                     byte[] uint8Array = src.GetDataUInt8Array(elm.field_name);
                     array_size = uint8Array.Length;
                     allocator.Add(uint8Array, parent_off + elm.offset, array_size * element_size);
+                    //Debug.Log("uint8: parent_off: " + parent_off + " elm.offset:" + elm.offset + " array_size:" + array_size);
                     return array_size;
                 case "uint16":
                     ushort[] uint16Array = src.GetDataUInt16Array(elm.field_name);
