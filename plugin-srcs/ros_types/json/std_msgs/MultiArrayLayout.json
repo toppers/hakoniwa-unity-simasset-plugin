@@ -1,12 +1,12 @@
 {
   "fields": [
     {
-      "type": "MultiArrayDimension[]", 
-      "name": "dim"
-    }, 
+      "name": "dim",
+      "type": "MultiArrayDimension[]"
+    },
     {
-      "type": "uint32", 
-      "name": "data_offset"
+      "name": "data_offset",
+      "type": "uint32"
     }
   ]
 }

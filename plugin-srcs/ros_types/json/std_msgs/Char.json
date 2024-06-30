@@ -1,8 +1,8 @@
 {
   "fields": [
     {
-      "type": "char", 
-      "name": "data"
+      "name": "data",
+      "type": "char"
     }
   ]
 }

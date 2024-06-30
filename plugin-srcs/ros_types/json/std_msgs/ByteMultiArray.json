@@ -1,12 +1,12 @@
 {
   "fields": [
     {
-      "type": "MultiArrayLayout", 
-      "name": "layout"
-    }, 
+      "name": "layout",
+      "type": "MultiArrayLayout"
+    },
     {
-      "type": "byte[]", 
-      "name": "data"
+      "name": "data",
+      "type": "byte[]"
     }
   ]
 }

@@ -1,8 +1,8 @@
 {
   "fields": [
     {
-      "type": "int16", 
-      "name": "data"
+      "name": "data",
+      "type": "int16"
     }
   ]
 }

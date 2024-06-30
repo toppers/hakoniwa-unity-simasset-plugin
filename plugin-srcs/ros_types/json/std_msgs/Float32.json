@@ -1,8 +1,8 @@
 {
   "fields": [
     {
-      "type": "float32", 
-      "name": "data"
+      "name": "data",
+      "type": "float32"
     }
   ]
 }
