@@ -1,8 +1,8 @@
 {
     "frame_id": "laser",
     "DetectionDistance": {
-        "Min": 60,
-        "Max": 4095
+        "Min": 20,
+        "Max": 5560
     },
     "DistanceAccuracy": {
         "type": "independent",
@@ -14,6 +14,11 @@
     "AngleRange": {
         "Min": -135.0,
         "Max": 120.0,
+        "AscendingOrderOfData": false,
+        "BlindPaddingRange": {
+            "Size": 44,
+            "Value": 0.0189999993890523
+        },
         "Resolution": 0.3515625,
         "ScanFrequency": 10
     },

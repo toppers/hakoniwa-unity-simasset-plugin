@@ -33,12 +33,20 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         public DistanceDepedentAccuracy DistanceDepedentAccuracy { get; set; }
         public DistanceIndepedentAccuracy DistanceIndepedentAccuracy { get; set; }
     }
+    [Serializable]
+    public class BlindPaddingRange
+    {
+        public int Size { get; set; }
+        public float Value { get; set; }
+    }
 
     [Serializable]
     public class AngleRange
     {
         public float Min { get; set; }
         public float Max { get; set; }
+        public bool AscendingOrderOfData { get; set; }
+        public BlindPaddingRange BlindPaddingRange { get; set; }
         public float Resolution { get; set; }
         public int ScanFrequency { get; set; }
     }
@@ -233,7 +241,24 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             pdu.SetData("angle_max", angle_max);
             pdu.SetData("range_min", range_min);
             pdu.SetData("range_max", range_max);
-            pdu.SetData("ranges", distances);
+
+            if (sensorParameters.AngleRange.BlindPaddingRange != null)
+            {
+                var values = new float[max_count];
+                for (int i = 0; i < sensorParameters.AngleRange.BlindPaddingRange.Size; i++)
+                {
+                    values[i] = sensorParameters.AngleRange.BlindPaddingRange.Value;
+                }
+                for (int i = sensorParameters.AngleRange.BlindPaddingRange.Size; i < max_count; i++)
+                {
+                    values[i] = distances[i - sensorParameters.AngleRange.BlindPaddingRange.Size];
+                }
+                pdu.SetData("ranges", values);
+            }
+            else
+            {
+                pdu.SetData("ranges", distances);
+            }
             pdu.SetData("angle_increment", angle_increment);
             pdu.SetData("time_increment", time_increment);
             pdu.SetData("scan_time", scan_time);
@@ -244,7 +269,14 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         {
             this.sensor.transform.localRotation = this.init_angle;
             int i = 0;
-            for (float yaw = this.sensorParameters.AngleRange.Max; i < this.max_count; yaw -= this.sensorParameters.AngleRange.Resolution)
+            float delta_yaw = this.sensorParameters.AngleRange.Resolution;
+            float start_yaw = this.sensorParameters.AngleRange.Min;
+            if (sensorParameters.AngleRange.AscendingOrderOfData == false)
+            {
+                delta_yaw = -this.sensorParameters.AngleRange.Resolution;
+                start_yaw = this.sensorParameters.AngleRange.Max;
+            }
+            for (float yaw = start_yaw; i < this.max_count; yaw += delta_yaw)
             {
                 float distance = GetSensorValue(yaw, 0, is_debug);
                 //Debug.Log("v[" + i + "]=" + distances[i]);
