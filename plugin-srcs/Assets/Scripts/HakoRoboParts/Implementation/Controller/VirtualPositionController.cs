@@ -60,18 +60,31 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 }
             }
         }
+        private Vector3 ConvertRos2Unity(Vector3 ros_data)
+        {
+            return new Vector3(
+                -ros_data.y, // unity.x
+                ros_data.z, // unity.y
+                ros_data.x  // unity.z
+                );
+        }
         public void DoControl()
         {
             Vector3 pos = new Vector3();
-            Vector3 euler = new Vector3();
+            Vector3 ros_euler = new Vector3(
+                (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("x"),
+                (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("y"),
+                (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("z")
+                );
 
             pos.x = -(float)this.pdu_reader.GetReadOps().Ref("linear").GetDataFloat64("y");
             pos.y = (float)this.pdu_reader.GetReadOps().Ref("linear").GetDataFloat64("z") + base_position_y;
             pos.z = (float)this.pdu_reader.GetReadOps().Ref("linear").GetDataFloat64("x");
 
-            euler.x = -(float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("y");
-            euler.y = (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("z") + this.base_rotation_y;
-            euler.z = (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("x");
+            //euler.x = -(float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("y");
+            //euler.y = (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("z") + this.base_rotation_y;
+            //euler.z = (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("x");
+            var unity_euler = -ConvertRos2Unity(ros_euler);
 
             pos.x = pos.x * scale;
             pos.z = pos.z * scale;
@@ -89,6 +102,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             {
                 this.rd.MovePosition(pos); // can not move smothly and baggage is dropped down..
             }
+            this.rd.rotation = Quaternion.Euler(unity_euler);
 
         }
         public RosTopicMessageConfig[] getRosConfig()
