@@ -15,7 +15,7 @@ then
 fi
 source detect_os_type.bash
 
-CPP_RELEASE_VER=v1.3.0
+CPP_RELEASE_VER=v2.0.0
 CURR_DIR=$(pwd)
 PARENT_DIR=plugin-srcs/Assets/Plugin
 if [ ${INSTALL_WIN} = "FALSE" -a ${OS_TYPE} = "wsl2" ]
