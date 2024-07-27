@@ -211,8 +211,24 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             {
                 foreach (var info in attachedRigidbodyInfos)
                 {
+                    // Move the parent object up slightly
                     info.gameObject.transform.parent = info.OriginalParent;
+                    info.OriginalParent.position += new Vector3(0, 0.3f, 0); // Adjust this value as needed
+
                     info.Rigidbody.isKinematic = false;
+                    info.Rigidbody.velocity = Vector3.zero; // Reset velocity
+                    info.Rigidbody.angularVelocity = Vector3.zero; // Reset angular velocity
+
+                    // Add initial force in the direction of gravity
+                    Vector3 gravityDirection = Physics.gravity.normalized;
+                    float initialSpeed = 5.0f; // Adjust this value as needed
+                    info.Rigidbody.AddForce(gravityDirection * initialSpeed, ForceMode.VelocityChange);
+
+                    info.Rigidbody.WakeUp(); // Ensure the Rigidbody is active
+
+                    // Return the parent object to its original position
+                    info.OriginalParent.position -= new Vector3(0, 0.3f, 0); // Adjust this value as needed
+
                     //Debug.Log("detached target: " + info.gameObject);
                     //Debug.Log("detached org parent " + info.OriginalParent);
                 }
