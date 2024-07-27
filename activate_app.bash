@@ -44,7 +44,11 @@ then
     APP_NAME=`find ./${BASE_NAME}.app/Contents/MacOS  -type f`
     ./${APP_NAME}
 else
-    echo "ERROR: not supported os type: ${OS_TYPE}"
+    cd ${APP_DIRPATH}
+    BASE_NAME=`basename ${APP_DIRPATH}`
+    ARCH_TYPE=`arch`
+    APP_NAME=${BASE_NAME}.${ARCH_TYPE}
+    ./${APP_NAME}
     exit 1
 fi
 
