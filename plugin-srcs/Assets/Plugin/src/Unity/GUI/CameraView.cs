@@ -153,20 +153,16 @@ public class CameraView : MonoBehaviour
     // カメラの位置と回転を fixedDistance と fixedAngle に基づいて更新
     private void UpdateCameraPositionAndRotation()
     {
-        if (target != null)
-        {
-            // 距離の差分を計算
-            Vector3 distanceDiff = fixedDistance - prevFixedDistance;
-            transform.position += distanceDiff;
+        // 距離の差分を計算
+        Vector3 distanceDiff = fixedDistance - prevFixedDistance;
+        transform.position += distanceDiff;
 
-            // 回転の差分を計算
-            Vector3 angleDiff = fixedAngle - prevFixedAngle;
+        // 回転の差分を計算
+        Vector3 angleDiff = fixedAngle - prevFixedAngle;
 
-            // 差分を使ってカメラを回転
-            transform.RotateAround(transform.position, transform.right, angleDiff.x);
-            transform.RotateAround(transform.position, Vector3.up, angleDiff.y);
-
-        }
+        // 差分を使ってカメラを回転
+        transform.RotateAround(transform.position, transform.right, angleDiff.x);
+        transform.RotateAround(transform.position, Vector3.up, angleDiff.y);
     }
     private void AutoUpdate()
     {
@@ -178,7 +174,8 @@ public class CameraView : MonoBehaviour
 
 
         // ターゲットの回転に応じたカメラの追従を適用
-        Vector3 desiredPosition = targetPosition + targetRotation * fixedDistance;
+        Vector3 directionToCamera = (transform.position - target.position).normalized;
+        Vector3 desiredPosition = targetPosition +  transform.rotation * fixedDistance;
 
 
         // ターゲットの回転に合わせてカメラも回転させる
