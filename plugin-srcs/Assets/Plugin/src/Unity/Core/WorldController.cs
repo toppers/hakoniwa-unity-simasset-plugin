@@ -21,9 +21,10 @@ namespace Hakoniwa.Core
 {
     class UnitySimulator : IInsideWorldSimulatior
     {
+        private long delta_time;
         public UnitySimulator()
         {
-
+            delta_time = (long)Math.Round((double)Time.fixedDeltaTime * 1000000.0f);
         }
         public void DoSimulation()
         {
@@ -31,7 +32,7 @@ namespace Hakoniwa.Core
         }
         public long GetDeltaTimeUsec()
         {
-            return (long)(Time.fixedDeltaTime * 1000000.0f);
+            return delta_time;
         }
     }
 
