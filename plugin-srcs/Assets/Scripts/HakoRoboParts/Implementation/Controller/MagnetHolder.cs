@@ -107,6 +107,10 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 }
                 Debug.Log($"MagnetHolder Found {rds.Count} Rigidbody components.");
             }
+            else
+            {
+                this.magnet_on = false;
+            }
         }
 
         void OnTriggerEnter(Collider other)
@@ -236,11 +240,11 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
                 contact_on = false;
             }
         }
-        public string [] topic_type = {
+        public string[] topic_type = {
             "hako_msgs/HakoCmdMagnetHolder",
             "hako_msgs/HakoStatusMagnetHolder"
         };
-        public string [] topic_name = {
+        public string[] topic_name = {
             "hako_cmd_magnet_holder",
             "hako_status_magnet_holder"
         };
