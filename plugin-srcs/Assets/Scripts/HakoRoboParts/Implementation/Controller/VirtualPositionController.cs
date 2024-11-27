@@ -72,10 +72,11 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
         {
             Vector3 pos = new Vector3();
             Vector3 ros_euler = new Vector3(
-                (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("x"),
-                (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("y"),
-                (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("z")
-                );
+                Mathf.Rad2Deg * (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("x"),
+                Mathf.Rad2Deg * (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("y"),
+                Mathf.Rad2Deg * (float)this.pdu_reader.GetReadOps().Ref("angular").GetDataFloat64("z")
+            );
+
 
             pos.x = -(float)this.pdu_reader.GetReadOps().Ref("linear").GetDataFloat64("y");
             pos.y = (float)this.pdu_reader.GetReadOps().Ref("linear").GetDataFloat64("z") + base_position_y;
@@ -89,7 +90,7 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             pos.x = pos.x * scale;
             pos.z = pos.z * scale;
             //Debug.Log("pos: " + pos);
-            //Debug.Log("euler: " + euler);
+            //Debug.Log("euler: " + unity_euler);
             if (enableLerp)
             {
                 Vector3 startPosition = this.rd.position;
@@ -119,8 +120,8 @@ namespace Hakoniwa.PluggableAsset.Assets.Robot.Parts
             configs[0].io_method = this.io_method;
             configs[0].value.org_name = this.topic_name[0];
             configs[0].value.type = this.topic_type[0];
-            configs[0].value.class_name = ConstantValues.pdu_writer_class;
-            configs[0].value.conv_class_name = ConstantValues.conv_pdu_writer_class;
+            configs[0].value.class_name = ConstantValues.pdu_reader_class;
+            configs[0].value.conv_class_name = ConstantValues.conv_pdu_reader_class;
             configs[0].value.pdu_size = ConstantValues.Twist_pdu_size;
             configs[0].value.write_cycle = 1;
             configs[0].value.method_type = this.comm_method.ToString();
