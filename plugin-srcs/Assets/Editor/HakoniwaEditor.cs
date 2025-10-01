@@ -193,13 +193,25 @@ public class HakoniwaEditor : EditorWindow
     static string GetCmdResult(string command)
     {
         System.Diagnostics.Process process = new System.Diagnostics.Process();
-        process.StartInfo.FileName = "PowerShell.exe";
-        process.StartInfo.Arguments = "wsl -e \"" + command + "\"";
+        process.StartInfo.FileName = "wsl";
+        // Escape single quotes and use proper quoting for bash
+        string escapedCommand = command.Replace("'", "'\\''");
+        process.StartInfo.Arguments = "bash -c '" + escapedCommand + "'";
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.RedirectStandardError = true;
         process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
         process.Start();
-        return process.StandardOutput.ReadToEnd();
+        string output = process.StandardOutput.ReadToEnd();
+        string error = process.StandardError.ReadToEnd();
+        process.WaitForExit();
+        
+        if (!string.IsNullOrEmpty(error))
+        {
+            Debug.LogWarning("WSL command error: " + error);
+        }
+        
+        return output;
     }
 
     static void GenerateConfigs(HakoRobotConfigContainer robo_config, bool isRPC, bool isWindows)
@@ -217,23 +229,31 @@ public class HakoniwaEditor : EditorWindow
                 core_config.pdu_bin_offset_package_dir = path.offset_path;
                 if (isWindows)
                 {
-                    string output = GetCmdResult("cat /etc/resolv.conf");
-                    char[] delimiters = new char[] { '\t', ' ', '\n' };
-                    string[] array = output.Split(delimiters);
-                    core_config.asset_ipaddr = array[array.Length - 2];
+                    // Get RESOLV_IPADDR using netstat (same as set_core_config.bash)
+                    string output = GetCmdResult("netstat -rn | grep '^0.0.0.0' | awk '{print $2}'");
+                    Debug.Log("RESOLV_IPADDR raw output: [" + output + "]");
+                    core_config.asset_ipaddr = output.Trim();
 
-                    //eth0
-                    output = GetCmdResult("/usr/sbin/ifconfig eth0");
-                    Regex regex = new Regex(@"inet\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})");
-                    Match match = regex.Match(output);
-                    if (match.Success)
+                    // Get network interface
+                    string network_interface = GetCmdResult("netstat -rn | grep '^0.0.0.0' | awk '{print $NF}'");
+                    Debug.Log("Network interface raw output: [" + network_interface + "]");
+                    network_interface = network_interface.Trim();
+
+                    // Get CORE_IPADDR from the network interface
+                    output = GetCmdResult("ip addr | grep inet | grep " + network_interface + " | awk '{print $2}' | awk -F/ '{print $1}'");
+                    Debug.Log("CORE_IPADDR raw output: [" + output + "]");
+                    core_config.core_ipaddr = output.Trim();
+                    
+                    Debug.Log("Final ASSET_IPADDR: " + core_config.asset_ipaddr);
+                    Debug.Log("Final CORE_IPADDR: " + core_config.core_ipaddr);
+                    
+                    if (string.IsNullOrEmpty(core_config.asset_ipaddr))
                     {
-                        core_config.core_ipaddr = match.Groups[1].Value;
+                        Debug.LogError("ERROR: can not found ASSET_IPADDR");
                     }
-                    else
+                    if (string.IsNullOrEmpty(core_config.core_ipaddr))
                     {
-                        core_config.core_ipaddr = output;
-                        //throw new ArgumentException("Can not found ipaddress from wsl2 eth0");
+                        Debug.LogError("ERROR: can not found CORE_IPADDR");
                     }
                 }
             }
