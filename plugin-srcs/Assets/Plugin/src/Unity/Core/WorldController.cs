@@ -88,6 +88,11 @@ namespace Hakoniwa.Core
                 Transform child = this.transform.GetChild(i);
                 Debug.Log(child.name);
                 var ctrl = child.GetComponentInChildren<IInsideAssetController>();
+                if (ctrl == null)
+                {
+                    Debug.LogWarning("Skip non-sim asset: " + child.name);
+                    continue;
+                }
                 ctrl.Initialize();
                 AssetConfigLoader.AddInsideAsset(ctrl);
                 iasset.RegisterInsideAsset(child.name);
@@ -151,7 +156,7 @@ namespace Hakoniwa.Core
             catch (Exception e)
             {
                 SimpleLogger.Get().Log(Level.ERROR, e);
-                throw e;
+                throw;
             }
         }
         void FixedUpdate()
@@ -163,7 +168,7 @@ namespace Hakoniwa.Core
             catch (Exception e)
             {
                 SimpleLogger.Get().Log(Level.ERROR, e);
-                throw e;
+                throw;
             }
         }
         void OnApplicationQuit()
